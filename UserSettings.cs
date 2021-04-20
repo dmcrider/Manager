@@ -13,6 +13,9 @@ namespace Manager
         public DateTimePattern TimePattern { get; set; }
         public string MasterRootPath { get; set; }
         public List<Project> ExcludedProjects { get; set; }
+        public string VSCodeExecutableLocation { get; set; }
+        public string VSCommunityExecutableLocation { get; set; }
+        public string AndroidStudioExecutableLocation { get; set; }
 
         public UserSettings()
         {
@@ -20,14 +23,20 @@ namespace Manager
             TimePattern = new DateTimePattern(DateTime.Now, "HH:mm:ss");
             MasterRootPath = "";
             ExcludedProjects = new List<Project>();
+            VSCodeExecutableLocation = "";
+            VSCommunityExecutableLocation = "";
+            AndroidStudioExecutableLocation = "";
         }
 
-        public UserSettings(DateTimePattern datePattern, DateTimePattern timePattern, string masterRootPath, List<Project> excluded)
+        public UserSettings(DateTimePattern datePattern, DateTimePattern timePattern, string masterRootPath, List<Project> excluded, string vsCode, string vsCommunity, string android)
         {
             DatePattern = datePattern;
             TimePattern = timePattern;
             MasterRootPath = masterRootPath;
             ExcludedProjects = excluded;
+            VSCodeExecutableLocation = vsCode;
+            VSCommunityExecutableLocation = vsCommunity;
+            AndroidStudioExecutableLocation = android;
         }
 
         public string GetDateTimeFormat()

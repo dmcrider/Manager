@@ -202,15 +202,11 @@ namespace Manager
         #region Load
         private void LoadLauncherConfig()
         {
-            var android = Properties.Settings.Default.AndroidStudioPath;
-            var vscode = Properties.Settings.Default.VSCodePath;
-            var studio = Properties.Settings.Default.VisualStudioPath;
-
-            /*if(android == "-1" || vscode == "-1" || studio == "-1")
-            {
-                LoadDefaultLocations();
-            }*/
             LoadDefaultLocations();
+
+            Settings.AndroidStudioExecutableLocation = Settings.AndroidStudioExecutableLocation == "" ? Properties.Settings.Default.AndroidStudioPath : Settings.AndroidStudioExecutableLocation;
+            Settings.VSCodeExecutableLocation = Settings.VSCodeExecutableLocation == "" ? Properties.Settings.Default.VSCodePath : Settings.VSCodeExecutableLocation;
+            Settings.VSCommunityExecutableLocation = Settings.VSCommunityExecutableLocation == "" ? Properties.Settings.Default.VisualStudioPath : Settings.VSCommunityExecutableLocation;
         }
 
         private void LoadDefaultLocations()
@@ -446,6 +442,17 @@ namespace Manager
             toolStripMenuItemVersion.Click += ToolStripMenuItemVersion_Click;
             toolStripMenuItemUpdates.Click += ToolStripMenuItemUpdates_Click;
             toolStripMenuItemExclude.Click += ToolStripMenuItemExclude_Click;
+            toolStripMenuItemLaunchers.Click += ToolStripMenuItemLaunchers_Click;
+        }
+
+        private void ToolStripMenuItemLaunchers_Click(object sender, EventArgs e)
+        {
+            FormLaunchers formLaunchers = new FormLaunchers(Settings);
+            
+            if(formLaunchers.ShowDialog() == DialogResult.OK)
+            {
+                SaveGlobalSettings();
+            }
         }
 
         private void ToolStripMenuItemExclude_Click(object sender, EventArgs e)
@@ -498,6 +505,7 @@ namespace Manager
         #endregion
 
         #region *_Click Methods
+        #region Git
         private void BtnGitRefresh_Click(object sender, EventArgs e)
         {
             var response = GetGitResponse($"log --oneline -{SelectedProject.GitLogHistory}");
@@ -525,6 +533,7 @@ namespace Manager
                 UpdateUI();
             }
         }
+        #endregion
 
         #region Timer
         private void BtnStart_Click(object sender, EventArgs e)
@@ -605,10 +614,11 @@ namespace Manager
         {
             ProcessStartInfo startInfo = new ProcessStartInfo()
             {
-                FileName = "explorer.exe"
+                Arguments = "/edit " + SelectedProject.MainProjectFile,
+                FileName = Path.Combine(Settings.VSCommunityExecutableLocation, "devenv.exe")
             };
 
-            LaunchProject("Failed to open Project directory. Verify the folder at the bottom of the screen exists.");
+            LaunchProject("Failed to open Project in Visual Studio Community. Verify the installation path in Settings -> Launchers.");
         }
 
         private void BtnAndroidStudio_Click(object sender, EventArgs e)

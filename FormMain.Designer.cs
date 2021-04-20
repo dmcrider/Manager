@@ -63,6 +63,7 @@
             this.txtTotalTime = new System.Windows.Forms.TextBox();
             this.lblTotal = new System.Windows.Forms.Label();
             this.grpOpenProject = new System.Windows.Forms.GroupBox();
+            this.toolStripMenuItemLaunchers = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStripMain.SuspendLayout();
             this.grpProjectDetails.SuspendLayout();
             this.grpTime.SuspendLayout();
@@ -100,7 +101,8 @@
             // 
             this.toolStripMenuItemSettings.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripMenuItemConfigure,
-            this.toolStripMenuItemExclude});
+            this.toolStripMenuItemExclude,
+            this.toolStripMenuItemLaunchers});
             this.toolStripMenuItemSettings.Name = "toolStripMenuItemSettings";
             this.toolStripMenuItemSettings.Size = new System.Drawing.Size(78, 25);
             this.toolStripMenuItemSettings.Text = "Settings";
@@ -399,6 +401,12 @@
             this.grpOpenProject.TabStop = false;
             this.grpOpenProject.Text = "Open Project";
             // 
+            // toolStripMenuItemLaunchers
+            // 
+            this.toolStripMenuItemLaunchers.Name = "toolStripMenuItemLaunchers";
+            this.toolStripMenuItemLaunchers.Size = new System.Drawing.Size(191, 26);
+            this.toolStripMenuItemLaunchers.Text = "Launchers";
+            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 21F);
@@ -467,6 +475,7 @@
         private System.Windows.Forms.Button btnVSCommunity;
         private System.Windows.Forms.Button btnVSCode;
         private System.Windows.Forms.Button btnFileExplorer;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemLaunchers;
     }
 }
 
