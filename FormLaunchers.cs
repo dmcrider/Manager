@@ -31,15 +31,37 @@ namespace Manager
         private void BtnChangePath_Click(object sender, EventArgs e)
         {
             string outpath = "";
-            using (folderDialog = new FolderBrowserDialog())
+            using (openFileDialog = new OpenFileDialog())
             {
-                folderDialog.RootFolder = Environment.SpecialFolder.ProgramFilesX86;
-                folderDialog.ShowNewFolderButton = false;
-                DialogResult result = folderDialog.ShowDialog();
-
-                if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(folderDialog.SelectedPath))
+                #region Set Initial Directory
+                try
                 {
-                    outpath = folderDialog.SelectedPath;
+                    switch (((Button)sender).Tag.ToString())
+                    {
+                        case "android":
+                            openFileDialog.InitialDirectory = Properties.Settings.Default.AndroidStudioPath;
+                            break;
+                        case "vscode":
+                            openFileDialog.InitialDirectory = Properties.Settings.Default.VSCodePath;
+                            break;
+                        case "vscommunity":
+                            openFileDialog.InitialDirectory = Properties.Settings.Default.VisualStudioPath;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                catch
+                {
+                    openFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
+                }
+                #endregion
+
+                DialogResult result = openFileDialog.ShowDialog();
+
+                if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(openFileDialog.FileName))
+                {
+                    outpath = openFileDialog.FileName;
                     btnSave.Enabled = true;
                     btnLoadDefaults.Enabled = true;
                 }

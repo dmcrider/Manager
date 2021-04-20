@@ -41,13 +41,14 @@ namespace Manager
             this.btnCancel = new System.Windows.Forms.Button();
             this.btnSave = new System.Windows.Forms.Button();
             this.btnLoadDefaults = new System.Windows.Forms.Button();
-            this.folderDialog = new System.Windows.Forms.FolderBrowserDialog();
+            this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
+            this.lblInstructions = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // lblAndroid
             // 
             this.lblAndroid.AutoSize = true;
-            this.lblAndroid.Location = new System.Drawing.Point(96, 38);
+            this.lblAndroid.Location = new System.Drawing.Point(96, 54);
             this.lblAndroid.Name = "lblAndroid";
             this.lblAndroid.Size = new System.Drawing.Size(117, 21);
             this.lblAndroid.TabIndex = 0;
@@ -56,7 +57,7 @@ namespace Manager
             // lblVSCode
             // 
             this.lblVSCode.AutoSize = true;
-            this.lblVSCode.Location = new System.Drawing.Point(70, 91);
+            this.lblVSCode.Location = new System.Drawing.Point(70, 107);
             this.lblVSCode.Name = "lblVSCode";
             this.lblVSCode.Size = new System.Drawing.Size(143, 21);
             this.lblVSCode.TabIndex = 1;
@@ -65,7 +66,7 @@ namespace Manager
             // lblVSCommunity
             // 
             this.lblVSCommunity.AutoSize = true;
-            this.lblVSCommunity.Location = new System.Drawing.Point(24, 144);
+            this.lblVSCommunity.Location = new System.Drawing.Point(24, 160);
             this.lblVSCommunity.Name = "lblVSCommunity";
             this.lblVSCommunity.Size = new System.Drawing.Size(189, 21);
             this.lblVSCommunity.TabIndex = 2;
@@ -73,7 +74,7 @@ namespace Manager
             // 
             // txtAndroidStudioPath
             // 
-            this.txtAndroidStudioPath.Location = new System.Drawing.Point(219, 35);
+            this.txtAndroidStudioPath.Location = new System.Drawing.Point(219, 51);
             this.txtAndroidStudioPath.Name = "txtAndroidStudioPath";
             this.txtAndroidStudioPath.ReadOnly = true;
             this.txtAndroidStudioPath.Size = new System.Drawing.Size(635, 29);
@@ -81,7 +82,7 @@ namespace Manager
             // 
             // txtVSCodePath
             // 
-            this.txtVSCodePath.Location = new System.Drawing.Point(219, 88);
+            this.txtVSCodePath.Location = new System.Drawing.Point(219, 104);
             this.txtVSCodePath.Name = "txtVSCodePath";
             this.txtVSCodePath.ReadOnly = true;
             this.txtVSCodePath.Size = new System.Drawing.Size(635, 29);
@@ -89,7 +90,7 @@ namespace Manager
             // 
             // txtVSCommunityPath
             // 
-            this.txtVSCommunityPath.Location = new System.Drawing.Point(219, 141);
+            this.txtVSCommunityPath.Location = new System.Drawing.Point(219, 157);
             this.txtVSCommunityPath.Name = "txtVSCommunityPath";
             this.txtVSCommunityPath.ReadOnly = true;
             this.txtVSCommunityPath.Size = new System.Drawing.Size(635, 29);
@@ -97,7 +98,7 @@ namespace Manager
             // 
             // btnAndroid
             // 
-            this.btnAndroid.Location = new System.Drawing.Point(861, 35);
+            this.btnAndroid.Location = new System.Drawing.Point(861, 51);
             this.btnAndroid.Name = "btnAndroid";
             this.btnAndroid.Size = new System.Drawing.Size(56, 29);
             this.btnAndroid.TabIndex = 6;
@@ -108,7 +109,7 @@ namespace Manager
             // 
             // btnVSCode
             // 
-            this.btnVSCode.Location = new System.Drawing.Point(861, 87);
+            this.btnVSCode.Location = new System.Drawing.Point(861, 103);
             this.btnVSCode.Name = "btnVSCode";
             this.btnVSCode.Size = new System.Drawing.Size(56, 29);
             this.btnVSCode.TabIndex = 7;
@@ -119,7 +120,7 @@ namespace Manager
             // 
             // btnVSCommunity
             // 
-            this.btnVSCommunity.Location = new System.Drawing.Point(861, 140);
+            this.btnVSCommunity.Location = new System.Drawing.Point(861, 156);
             this.btnVSCommunity.Name = "btnVSCommunity";
             this.btnVSCommunity.Size = new System.Drawing.Size(56, 29);
             this.btnVSCommunity.TabIndex = 8;
@@ -158,15 +159,25 @@ namespace Manager
             this.btnLoadDefaults.UseVisualStyleBackColor = true;
             this.btnLoadDefaults.Click += new System.EventHandler(this.BtnLoadDefaults_Click);
             // 
-            // folderDialog
+            // openFileDialog
             // 
-            this.folderDialog.RootFolder = System.Environment.SpecialFolder.MyDocuments;
+            this.openFileDialog.FileName = "openFileDialog1";
+            // 
+            // lblInstructions
+            // 
+            this.lblInstructions.AutoSize = true;
+            this.lblInstructions.Location = new System.Drawing.Point(234, 9);
+            this.lblInstructions.Name = "lblInstructions";
+            this.lblInstructions.Size = new System.Drawing.Size(460, 21);
+            this.lblInstructions.TabIndex = 12;
+            this.lblInstructions.Text = "Please select the executable file for each program (e.g. studio.exe)";
             // 
             // FormLaunchers
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 21F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(929, 274);
+            this.Controls.Add(this.lblInstructions);
             this.Controls.Add(this.btnLoadDefaults);
             this.Controls.Add(this.btnSave);
             this.Controls.Add(this.btnCancel);
@@ -202,6 +213,7 @@ namespace Manager
         private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.Button btnSave;
         private System.Windows.Forms.Button btnLoadDefaults;
-        private System.Windows.Forms.FolderBrowserDialog folderDialog;
+        private System.Windows.Forms.OpenFileDialog openFileDialog;
+        private System.Windows.Forms.Label lblInstructions;
     }
 }

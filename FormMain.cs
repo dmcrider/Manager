@@ -325,12 +325,14 @@ namespace Manager
                 string jsonOut = Newtonsoft.Json.JsonConvert.SerializeObject(Settings);
                 File.WriteAllText(configFile, jsonOut);
             }
-            catch
+            catch(Exception ex)
             {
                 if (notifyOnFailure)
                 {
                     MessageBox.Show("Failed to save settings. Please try again later.");
                 }
+                string errorLogPath = Path.Combine(baseFilePath, $"ErrorLog_{DateTime.Now:yyyyMMdd_HHmmss}.txt");
+                CreateErrorLog(errorLogPath, ex.Message);
             }
         }
 
@@ -602,53 +604,63 @@ namespace Manager
 
         private void BtnVSCode_Click(object sender, EventArgs e)
         {
-            ProcessStartInfo startInfo = new ProcessStartInfo()
+            ProcessStartInfo psInfo = new ProcessStartInfo()
             {
-                FileName = "explorer.exe"
+                Arguments = SelectedProject.MainProjectFile,
+                FileName = Settings.VSCodeExecutableLocation
             };
 
-            LaunchProject("Failed to open Project directory. Verify the folder at the bottom of the screen exists.");
+            LaunchProject("Failed to open Project in VSCode. Check the Error Log for more details.", startInfo: psInfo);
         }
 
         private void BtnVSCommunity_Click(object sender, EventArgs e)
         {
-            ProcessStartInfo startInfo = new ProcessStartInfo()
+            ProcessStartInfo psInfo = new ProcessStartInfo()
             {
                 Arguments = "/edit " + SelectedProject.MainProjectFile,
-                FileName = Path.Combine(Settings.VSCommunityExecutableLocation, "devenv.exe")
+                FileName = Settings.VSCommunityExecutableLocation
             };
 
-            LaunchProject("Failed to open Project in Visual Studio Community. Verify the installation path in Settings -> Launchers.");
+            LaunchProject("Failed to open Project in Visual Studio Community. Verify the installation path in Settings -> Launchers.", startInfo: psInfo);
         }
 
         private void BtnAndroidStudio_Click(object sender, EventArgs e)
         {
-            ProcessStartInfo startInfo = new ProcessStartInfo()
+            ProcessStartInfo psInfo = new ProcessStartInfo()
             {
-                FileName = "explorer.exe"
+                FileName = Settings.AndroidStudioExecutableLocation
             };
 
-            LaunchProject("Failed to open Project directory. Verify the folder at the bottom of the screen exists.");
+            LaunchProject("Failed to open Project directory. Verify the folder at the bottom of the screen exists.", startInfo: psInfo);
         }
         #endregion
         #endregion
 
         private void LaunchProject(string failMessage, string fileName = "", ProcessStartInfo startInfo = null)
         {
-            if (Directory.Exists(SelectedProject.RootDirectory))
+            try
             {
-                if(fileName != "")
+                if (Directory.Exists(SelectedProject.RootDirectory))
                 {
-                    Process.Start(fileName);
+                    if (fileName != "")
+                    {
+                        Process.Start(fileName);
+                    }
+                    else if (startInfo != null)
+                    {
+                        Process.Start(startInfo);
+                    }
                 }
-                else if(startInfo != null)
+                else
                 {
-                    Process.Start(startInfo);
+                    throw new FileNotFoundException();
                 }
             }
-            else
+            catch (Exception ex)
             {
-                MessageBox.Show(failMessage);
+                string errorLogPath = Path.Combine(baseFilePath, $"ErrorLog_{DateTime.Now:yyyyMMdd_HHmmss}.txt");
+                CreateErrorLog(errorLogPath, ex.Message);
+                MessageBox.Show(failMessage + "\n\nError Log: " + errorLogPath);
             }
         }
 
@@ -708,6 +720,11 @@ namespace Manager
                     SaveGlobalSettings(false);
                 }
             }
+        }
+
+        private void CreateErrorLog(string fullPath, string content)
+        {
+            File.WriteAllText(fullPath, content);
         }
     }
 
