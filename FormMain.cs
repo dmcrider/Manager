@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -16,7 +17,11 @@ namespace Manager
     {
         public BindingList<Project> ProjectList;
         public Project SelectedProject;
+        public TimeLog CurrentTimeLog;
+        public TimeLog LastTimeLog;
+        public UserSettings Settings;
 
+        #region Event Handlers
         public event EventHandler<SelectedProjectChangedEventArgs> SelectedProjectChanged;
         protected virtual void OnSelectedProjectChanged(SelectedProjectChangedEventArgs e)
         {
@@ -24,18 +29,35 @@ namespace Manager
             handler?.Invoke(this, e);
         }
 
+        public event EventHandler<ProjectListChangedEventArgs> ProjectListChanged;
+        protected virtual void OnProjectListChanged(ProjectListChangedEventArgs e)
+        {
+            EventHandler<ProjectListChangedEventArgs> handler = ProjectListChanged;
+            handler?.Invoke(this, e);
+        }
+        #endregion
+
         private readonly BindingSource bindingSourceProjects = new BindingSource();
+        private bool GitEnabled;
+        private bool isTimerPaused;
+        private Stopwatch projectStopwatch;
+        private string baseFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),"Project Manager");
 
         public FormMain()
         {
             InitializeComponent();
+            CenterToScreen();
         }
 
         private void FormMain_Load(object sender, EventArgs e)
         {
+            ValidateSettings();
             InitializeMenuStripClickMethods();
             ProjectList = new BindingList<Project>();
+            projectStopwatch = new Stopwatch();
+
             SelectedProjectChanged += FormMain_SelectedProjectChanged;
+            ProjectListChanged += FormMain_ProjectListChanged;
 
             LoadUserConfig();
             LoadLauncherConfig();
@@ -47,6 +69,137 @@ namespace Manager
             }
         }
 
+        #region Event Handler Implementation
+        private void FormMain_SelectedProjectChanged(object sender, SelectedProjectChangedEventArgs e)
+        {
+            // Update the displayed info
+            SelectedProject = e.Project;
+            if(e.Project == null) { return; }
+            lblProjectName.Text = e.Project.Name;
+            lblProjectLocation.Text = e.Project.RootDirectory;
+            lblLastUpdatedValue.Text = GetLastUpdatedTime(e.Project.RootDirectory);
+            GitEnabled = e.Project.EnableGitLog;
+            isTimerPaused = false;
+            UpdateUI();
+        }
+
+        private void FormMain_ProjectListChanged(object sender, ProjectListChangedEventArgs e)
+        {
+            ProjectList = e.NewList;
+            ResetLoadedProjects();
+        }
+
+        private void ListboxProjects_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            OnSelectedProjectChanged(new SelectedProjectChangedEventArgs(listboxProjects.SelectedItem as Project));
+        }
+        #endregion
+
+        #region Save & Load
+        private void UpdateUI()
+        {
+            #region Git History
+            if (GitEnabled)
+            {
+                btnGitChangeBranch.Visible = btnGitRefresh.Visible = txtGitHistory.Visible = lblGitBranch.Visible = lblGitBranchValue.Visible = true;
+                btnGitRefresh.PerformClick();
+
+                var branches = GetGitResponse("branch");
+
+                foreach (var line in branches)
+                {
+                    if (line[0] == '*')
+                    {
+                        lblGitBranchValue.Text = line.Substring(2);
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                btnGitChangeBranch.Visible = btnGitRefresh.Visible = txtGitHistory.Visible = lblGitBranch.Visible = lblGitBranchValue.Visible = false;
+            }
+            #endregion
+
+            #region Time log
+            if (SelectedProject != null && SelectedProject.EnableTimekeeping)
+            {
+                grpTime.Enabled = true;
+                var configFile = SelectedProject.TimeLogPath();
+                if (File.Exists(configFile))
+                {
+                    using StreamReader r2 = File.OpenText(configFile);
+                    string json2 = r2.ReadToEnd();
+                    CurrentTimeLog = JsonConvert.DeserializeObject<TimeLog>(json2);
+
+                    if(CurrentTimeLog != null)
+                    {
+                        LastTimeLog = CurrentTimeLog.LastSession;
+                        txtTotalTime.Text = GetTotalProjectTime(CurrentTimeLog);
+                    }
+
+                    r2.Dispose();
+                }
+                else
+                {
+                    File.Create(configFile).Dispose();
+                }
+            }
+            else
+            {
+                grpTime.Visible = false;
+            }
+            #endregion
+
+            #region Project Details
+            if(ProjectList.Count == 1 && SelectedProject.Name == "No Projects Found")
+            {
+                lblLastUpdated.Text = "Set a default project directory, or add individual projects under Settings -> Configure.";
+                lblLastUpdatedValue.Visible = false;
+            }
+            else
+            {
+                lblLastUpdated.Text = "Last Updated:";
+                lblLastUpdatedValue.Visible = true;
+            }
+            #endregion
+
+            #region Open With
+            if(SelectedProject.DefaultLauncher.Value == Launcher.None.Value)
+            {
+                btnAndroidStudio.Enabled = false;
+                btnVSCode.Enabled = false;
+                btnVSCommunity.Enabled = false;
+            }
+            else if(SelectedProject.DefaultLauncher.Value == Launcher.AndroidStudio.Value)
+            {
+                btnAndroidStudio.Enabled = true;
+                btnVSCode.Enabled = false;
+                btnVSCommunity.Enabled = false;
+            }
+            else if(SelectedProject.DefaultLauncher.Value == Launcher.VisualStudioCode.Value)
+            {
+                    btnAndroidStudio.Enabled = false;
+                    btnVSCode.Enabled = true;
+                    btnVSCommunity.Enabled = false;
+            }
+            else if(SelectedProject.DefaultLauncher.Value == Launcher.VisualStudioCommunity.Value)
+            {
+                btnAndroidStudio.Enabled = false;
+                btnVSCode.Enabled = false;
+                btnVSCommunity.Enabled = true;
+            }
+            else
+            {
+                SelectedProject.DefaultLauncher = Launcher.None;
+                btnAndroidStudio.Enabled = false;
+                btnVSCode.Enabled = false;
+                btnVSCommunity.Enabled = false;
+            }
+            #endregion
+        }
+
+        #region Load
         private void LoadLauncherConfig()
         {
             var android = Properties.Settings.Default.AndroidStudioPath;
@@ -69,37 +222,221 @@ namespace Manager
             Properties.Settings.Default.Save();
         }
 
-        private void FormMain_SelectedProjectChanged(object sender, SelectedProjectChangedEventArgs e)
-        {
-            // Update the displayed info
-            lblProjectName.Text = e.Project.Name;
-            lblProjectLocation.Text = e.Project.RootDirectory;
-        }
-
         private void LoadUserConfig()
         {
             try
             {
-                var configFile = Path.Combine(Directory.GetCurrentDirectory(), "projects.json");
+                // Load Settings
+                LoadGlobalSettings();
 
-                using StreamReader r = File.OpenText(configFile);
-                string json = r.ReadToEnd();
-                ProjectList = JsonConvert.DeserializeObject<BindingList<Project>>(json);
+                // Individual Projects
+                ProjectList = LoadProjects();
+
                 ResetLoadedProjects();
             }
-            catch
+            catch(NullReferenceException ex)
             {
-                ProjectList = new BindingList<Project>();
-                MessageBox.Show("No projects.json file found. Please create one, or add projects manually.");
+                MessageBox.Show(ex.Message);
             }
         }
+
+        private BindingList<Project> LoadProjects()
+        {
+            BindingList<Project> retval = new BindingList<Project>();
+            var configFile = Path.Combine(baseFilePath, "projects.json");
+            if (File.Exists(configFile))
+            {
+                retval = JsonConvert.DeserializeObject<BindingList<Project>>(File.ReadAllText(configFile));
+            }
+            else
+            {
+                File.Create(configFile).Dispose();
+            }
+
+            return retval;
+        }
+
+        private void LoadGlobalSettings()
+        {
+            var configFile = Path.Join(baseFilePath, "settings.json");
+            if (File.Exists(configFile))
+            {
+                using (StreamReader r2 = new StreamReader(File.OpenRead(configFile)))
+                {
+                    string json2 = r2.ReadToEnd();
+                    Settings = JsonConvert.DeserializeObject<UserSettings>(json2);
+                }
+
+                if (Settings == null)
+                {
+                    Settings = new UserSettings();
+                }
+            }
+            else
+            {
+                Settings = new UserSettings();
+            }
+
+            if (!string.IsNullOrEmpty(Settings.MasterRootPath) && !string.IsNullOrWhiteSpace(Settings.MasterRootPath))
+            {
+                ProjectList = AddProjects(Settings.MasterRootPath);
+            }
+            else
+            {
+                ProjectList = new BindingList<Project>();
+            }
+        }
+        #endregion
 
         private void ResetLoadedProjects()
         {
-            bindingSourceProjects.DataSource = ProjectList;
+            if(ProjectList.Count == 0)
+            {
+                ProjectList.Add(new Project()
+                {
+                    Name = "No Projects Found",
+                    EnableTimekeeping = false,
+                    EnableGitLog = false
+                });
+            }
+
+            foreach (Project proj in Settings.ExcludedProjects)
+            {
+                ProjectList.Remove(proj);
+            }
+
+            var tempList = new BindingList<Project>(ProjectList.Distinct().ToList());
+            ProjectList = tempList;
+
+            bindingSourceProjects.DataSource = ProjectList.OrderBy(x => x.Name);
             listboxProjects.DataSource = bindingSourceProjects;
             listboxProjects.DisplayMember = "Name";
+
+            UpdateUI();
         }
+
+        private void SaveGlobalSettings(bool notifyOnFailure=true)
+        {
+            try
+            {
+                var configFile = Path.Combine(baseFilePath, "settings.json");
+
+                if (!File.Exists(configFile))
+                {
+                    File.Create(configFile).Dispose();
+                }
+
+                string jsonOut = Newtonsoft.Json.JsonConvert.SerializeObject(Settings);
+                File.WriteAllText(configFile, jsonOut);
+            }
+            catch
+            {
+                if (notifyOnFailure)
+                {
+                    MessageBox.Show("Failed to save settings. Please try again later.");
+                }
+            }
+        }
+
+        private void SaveProjectList()
+        {
+            try
+            {
+                var configFile = Path.Combine(baseFilePath, "projects.json");
+
+                if (!File.Exists(configFile))
+                {
+                    File.Create(configFile).Dispose();
+                }
+
+                string jsonOut = Newtonsoft.Json.JsonConvert.SerializeObject(ProjectList);
+                File.WriteAllText(configFile, jsonOut);
+
+                ResetLoadedProjects();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Failed to save projects. Please try again later.\n\n" + ex.Message);
+            }
+        }
+
+        private void UpdateTimeLogFile()
+        {
+            try
+            {
+                var configFile = SelectedProject.TimeLogPath();
+
+                if (!File.Exists(configFile))
+                {
+                    File.Create(configFile).Dispose();
+                }
+
+                string jsonOut = Newtonsoft.Json.JsonConvert.SerializeObject(CurrentTimeLog);
+                File.WriteAllText(configFile, jsonOut);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Failed to save time log.\n\n" + ex.Message);
+            }
+        }
+
+        private string GetTotalProjectTime(TimeLog log)
+        {
+            int totalSeconds = 0;
+            do
+            {
+                if (log.StartTime == DateTime.Parse("0001-01-01") || log.EndTime == DateTime.Parse("0001-01-01")) { break; }
+                totalSeconds += TimeLog.TimeInSeconds(log.StartTime, log.EndTime);
+                log = log.LastSession;
+            }
+            while (log != null);
+
+            return TimeLog.FormattedTime(totalSeconds);
+        }
+
+        public BindingList<Project> AddProjects(string path)
+        {
+            BindingList<Project> retVal = new BindingList<Project>();
+
+            foreach(var folder in System.IO.Directory.GetDirectories(path))
+            {
+                Project temp = new Project()
+                {
+                    Name = new DirectoryInfo(folder).Name,
+                    RootDirectory = folder
+                };
+
+                // Don't include the project if it's been explicitly excluded
+                if(Settings.ExcludedProjects.Where(x=>x.RootDirectory == temp.RootDirectory).Any())
+                {
+                    continue;
+                }
+
+                retVal.Add(temp);
+            }
+
+            return retVal;
+        }
+
+        public BindingList<Project> GetProjectsInDirectory(string path)
+        {
+            BindingList<Project> retVal = new BindingList<Project>();
+
+            var results = System.IO.Directory.GetDirectories(path);
+            foreach (var folder in results)
+            {
+                Project temp = new Project()
+                {
+                    Name = new DirectoryInfo(folder).Name,
+                    RootDirectory = folder
+                };
+
+                retVal.Add(temp);
+            }
+
+            return retVal;
+        }
+        #endregion
 
         #region MenuStrip
         private void InitializeMenuStripClickMethods()
@@ -108,6 +445,25 @@ namespace Manager
             toolStripMenuItemConfigure.Click += ToolStripMenuItemConfigure_Click;
             toolStripMenuItemVersion.Click += ToolStripMenuItemVersion_Click;
             toolStripMenuItemUpdates.Click += ToolStripMenuItemUpdates_Click;
+            toolStripMenuItemExclude.Click += ToolStripMenuItemExclude_Click;
+        }
+
+        private void ToolStripMenuItemExclude_Click(object sender, EventArgs e)
+        {
+            FormExcludeProjects formExclude = new FormExcludeProjects()
+            {
+                Settings = this.Settings,
+                _Parent = this
+            };
+
+            formExclude.ShowDialog();
+
+            if(formExclude.DialogResult == DialogResult.OK)
+            {
+                OnProjectListChanged(new ProjectListChangedEventArgs(formExclude.GetNewProjectList()));
+                SaveProjectList();
+                SaveGlobalSettings();
+            }
         }
 
         private void ToolStripMenuItemUpdates_Click(object sender, EventArgs e)
@@ -122,7 +478,17 @@ namespace Manager
 
         private void ToolStripMenuItemConfigure_Click(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            FormSettings formSettings = new FormSettings(this, Settings);
+            formSettings.ShowDialog();
+
+            if(formSettings.DialogResult == DialogResult.Yes)
+            {
+                OnProjectListChanged(new ProjectListChangedEventArgs(formSettings.ProjectList));
+                OnSelectedProjectChanged(new SelectedProjectChangedEventArgs(SelectedProject));
+                SaveProjectList();
+                SaveGlobalSettings();
+            }
+
         }
 
         private void ToolStripMenuItemExit_Click(object sender, EventArgs e)
@@ -131,25 +497,205 @@ namespace Manager
         }
         #endregion
 
-        private void ListboxProjects_SelectedIndexChanged(object sender, EventArgs e)
+        #region *_Click Methods
+        private void BtnGitRefresh_Click(object sender, EventArgs e)
         {
-            OnSelectedProjectChanged(new SelectedProjectChangedEventArgs(listboxProjects.SelectedItem as Project));
+            var response = GetGitResponse($"log --oneline -{SelectedProject.GitLogHistory}");
+
+            txtGitHistory.Text = string.Empty;
+            foreach (var line in response)
+            {
+                txtGitHistory.Text += line + Environment.NewLine;
+            }
         }
 
-        private void BtnOpenWith_Click(object sender, EventArgs e)
+        private void BtnGitChangeBranch_Click(object sender, EventArgs e)
         {
-            if(sender is Button btnSender)
+            FormChangeGitBranch formChangeBranch = new FormChangeGitBranch()
             {
-                switch (btnSender.Tag.ToString())
+                SelectedProject = this.SelectedProject,
+                _Parent = this
+            };
+
+            formChangeBranch.ShowDialog();
+
+            if(formChangeBranch.DialogResult == DialogResult.OK)
+            {
+                GetGitResponse($"checkout {SelectedProject.GitCurrentBranch}");
+                UpdateUI();
+            }
+        }
+
+        #region Timer
+        private void BtnStart_Click(object sender, EventArgs e)
+        {
+            if (isTimerPaused)
+            {
+                isTimerPaused = false;
+            }
+            else
+            {
+                CurrentTimeLog = new TimeLog()
                 {
-                    case "android":
-                        break;
-                    case "vscode":
-                        break;
-                    case "visualstudio":
-                        break;
-                    default:
-                        return;
+                    StartTime = DateTime.Now,
+                    LastSession = LastTimeLog
+                };
+
+                txtCurrentStart.Text = string.Format(Settings.GetDateTimeFormat(), CurrentTimeLog.StartTime);
+            }
+
+            projectStopwatch.Start();
+            btnPause.Enabled = true;
+            btnStop.Enabled = true;
+            btnStart.Enabled = false;
+        }
+
+        private void BtnPause_Click(object sender, EventArgs e)
+        {
+            isTimerPaused = true;
+            projectStopwatch.Stop();
+            CurrentTimeLog.ElapsedTime += projectStopwatch.Elapsed;
+
+            btnPause.Enabled = false;
+            btnStart.Enabled = true;
+            btnStop.Enabled = true;
+        }
+
+        private void BtnStop_Click(object sender, EventArgs e)
+        {
+            isTimerPaused = false;
+            projectStopwatch.Stop();
+            CurrentTimeLog.ElapsedTime += projectStopwatch.Elapsed;
+
+            CurrentTimeLog.EndTime = CurrentTimeLog.StartTime.Add(CurrentTimeLog.ElapsedTime);
+            LastTimeLog = CurrentTimeLog;
+
+            btnPause.Enabled = false;
+            btnStop.Enabled = false;
+            btnStart.Enabled = true;
+
+            UpdateTimeLogFile();
+        }
+
+        #endregion
+
+        #region Launchers
+        private void BtnFileExplorer_Click(object sender, EventArgs e)
+        {
+            ProcessStartInfo psInfo = new ProcessStartInfo()
+            {
+                Arguments = SelectedProject.RootDirectory,
+                FileName = "explorer.exe"
+            };
+
+            LaunchProject("Failed to open Project directory. Verify the folder at the bottom of the screen exists.", startInfo: psInfo);
+        }
+
+        private void BtnVSCode_Click(object sender, EventArgs e)
+        {
+            ProcessStartInfo startInfo = new ProcessStartInfo()
+            {
+                FileName = "explorer.exe"
+            };
+
+            LaunchProject("Failed to open Project directory. Verify the folder at the bottom of the screen exists.");
+        }
+
+        private void BtnVSCommunity_Click(object sender, EventArgs e)
+        {
+            ProcessStartInfo startInfo = new ProcessStartInfo()
+            {
+                FileName = "explorer.exe"
+            };
+
+            LaunchProject("Failed to open Project directory. Verify the folder at the bottom of the screen exists.");
+        }
+
+        private void BtnAndroidStudio_Click(object sender, EventArgs e)
+        {
+            ProcessStartInfo startInfo = new ProcessStartInfo()
+            {
+                FileName = "explorer.exe"
+            };
+
+            LaunchProject("Failed to open Project directory. Verify the folder at the bottom of the screen exists.");
+        }
+        #endregion
+        #endregion
+
+        private void LaunchProject(string failMessage, string fileName = "", ProcessStartInfo startInfo = null)
+        {
+            if (Directory.Exists(SelectedProject.RootDirectory))
+            {
+                if(fileName != "")
+                {
+                    Process.Start(fileName);
+                }
+                else if(startInfo != null)
+                {
+                    Process.Start(startInfo);
+                }
+            }
+            else
+            {
+                MessageBox.Show(failMessage);
+            }
+        }
+
+        private string GetLastUpdatedTime(string root)
+        {
+            return new DirectoryInfo(root).EnumerateFiles().OrderByDescending(f => f.LastWriteTime).FirstOrDefault().LastWriteTime.ToString(Settings.GetDateTimeFormat());
+        }
+
+        public List<string> GetGitResponse(string command)
+        {
+            ProcessStartInfo startInfo = new ProcessStartInfo("git.exe");
+
+            startInfo.UseShellExecute = false;
+            startInfo.WorkingDirectory = SelectedProject.RootDirectory;
+            startInfo.WindowStyle = ProcessWindowStyle.Minimized;
+            startInfo.RedirectStandardInput = true;
+            startInfo.RedirectStandardOutput = true;
+            startInfo.Arguments = command;
+
+            Process process = new Process();
+            process.StartInfo = startInfo;
+            process.Start();
+
+            List<string> output = new List<string>();
+            string lineVal = process.StandardOutput.ReadLine();
+
+            while (lineVal != null)
+            {
+
+                output.Add(lineVal);
+                lineVal = process.StandardOutput.ReadLine();
+
+            }
+
+            process.WaitForExit();
+
+            return output;
+        }
+
+        private void ValidateSettings()
+        {
+            if (Directory.Exists(baseFilePath) == false)
+            {
+                Directory.CreateDirectory(baseFilePath);
+                Settings = new UserSettings();
+                SaveGlobalSettings(false);
+            }
+            else
+            {
+                if(File.Exists(Path.Combine(baseFilePath, "settings.json")))
+                {
+                    return;
+                }
+                else
+                {
+                    Settings = new UserSettings();
+                    SaveGlobalSettings(false);
                 }
             }
         }
@@ -162,6 +708,16 @@ namespace Manager
         public SelectedProjectChangedEventArgs(Project project)
         {
             Project = project;
+        }
+    }
+
+    public class ProjectListChangedEventArgs : EventArgs
+    {
+        public BindingList<Project> NewList { get; set; }
+
+        public ProjectListChangedEventArgs(BindingList<Project> newList)
+        {
+            NewList = newList;
         }
     }
 }
