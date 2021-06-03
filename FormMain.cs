@@ -73,13 +73,14 @@ namespace Manager
         private void FormMain_SelectedProjectChanged(object sender, SelectedProjectChangedEventArgs e)
         {
             // Update the displayed info
+            if (e.Project == null) { return; }
             SelectedProject = e.Project;
-            if(e.Project == null) { return; }
             lblProjectName.Text = e.Project.Name;
             lblProjectLocation.Text = e.Project.RootDirectory;
             lblLastUpdatedValue.Text = GetLastUpdatedTime(e.Project.RootDirectory);
             GitEnabled = e.Project.EnableGitLog;
             isTimerPaused = false;
+            btnNotes.Tag = e.Project.NotesPath;
             UpdateUI();
         }
 
@@ -125,7 +126,7 @@ namespace Manager
             if (SelectedProject != null && SelectedProject.EnableTimekeeping)
             {
                 grpTime.Enabled = true;
-                var configFile = SelectedProject.TimeLogPath();
+                var configFile = SelectedProject.TimeLogPath;
                 if (File.Exists(configFile))
                 {
                     using StreamReader r2 = File.OpenText(configFile);
@@ -362,7 +363,7 @@ namespace Manager
         {
             try
             {
-                var configFile = SelectedProject.TimeLogPath();
+                var configFile = SelectedProject.TimeLogPath;
 
                 if (!File.Exists(configFile))
                 {
@@ -632,6 +633,15 @@ namespace Manager
             };
 
             LaunchProject("Failed to open Project directory. Verify the folder at the bottom of the screen exists.", startInfo: psInfo);
+        }
+        #endregion
+
+        #region Notes
+        private void BtnNotes_Click(object sender, EventArgs e)
+        {
+            string notesPath = ((Button)sender).Tag.ToString();
+            FormNotes formNotes = new FormNotes(notesPath);
+            formNotes.ShowDialog();
         }
         #endregion
         #endregion

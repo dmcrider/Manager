@@ -35,6 +35,7 @@
             this.toolStripMenuItemSettings = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItemConfigure = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItemExclude = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItemLaunchers = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItemAbout = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItemVersion = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItemUpdates = new System.Windows.Forms.ToolStripMenuItem();
@@ -63,7 +64,7 @@
             this.txtTotalTime = new System.Windows.Forms.TextBox();
             this.lblTotal = new System.Windows.Forms.Label();
             this.grpOpenProject = new System.Windows.Forms.GroupBox();
-            this.toolStripMenuItemLaunchers = new System.Windows.Forms.ToolStripMenuItem();
+            this.btnNotes = new System.Windows.Forms.Button();
             this.menuStripMain.SuspendLayout();
             this.grpProjectDetails.SuspendLayout();
             this.grpTime.SuspendLayout();
@@ -118,6 +119,12 @@
             this.toolStripMenuItemExclude.Name = "toolStripMenuItemExclude";
             this.toolStripMenuItemExclude.Size = new System.Drawing.Size(191, 26);
             this.toolStripMenuItemExclude.Text = "Exclude Projects";
+            // 
+            // toolStripMenuItemLaunchers
+            // 
+            this.toolStripMenuItemLaunchers.Name = "toolStripMenuItemLaunchers";
+            this.toolStripMenuItemLaunchers.Size = new System.Drawing.Size(191, 26);
+            this.toolStripMenuItemLaunchers.Text = "Launchers";
             // 
             // toolStripMenuItemAbout
             // 
@@ -401,17 +408,22 @@
             this.grpOpenProject.TabStop = false;
             this.grpOpenProject.Text = "Open Project";
             // 
-            // toolStripMenuItemLaunchers
+            // btnNotes
             // 
-            this.toolStripMenuItemLaunchers.Name = "toolStripMenuItemLaunchers";
-            this.toolStripMenuItemLaunchers.Size = new System.Drawing.Size(191, 26);
-            this.toolStripMenuItemLaunchers.Text = "Launchers";
+            this.btnNotes.Location = new System.Drawing.Point(1019, 487);
+            this.btnNotes.Name = "btnNotes";
+            this.btnNotes.Size = new System.Drawing.Size(133, 30);
+            this.btnNotes.TabIndex = 10;
+            this.btnNotes.Text = "Project Notes";
+            this.btnNotes.UseVisualStyleBackColor = true;
+            this.btnNotes.Click += new System.EventHandler(this.BtnNotes_Click);
             // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 21F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1164, 722);
+            this.Controls.Add(this.btnNotes);
             this.Controls.Add(this.grpOpenProject);
             this.Controls.Add(this.grpTime);
             this.Controls.Add(this.btnGitChangeBranch);
@@ -476,6 +488,7 @@
         private System.Windows.Forms.Button btnVSCode;
         private System.Windows.Forms.Button btnFileExplorer;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemLaunchers;
+        private System.Windows.Forms.Button btnNotes;
     }
 }
 

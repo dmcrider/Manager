@@ -17,6 +17,7 @@ namespace Manager
         public FormLaunchers(UserSettings settings)
         {
             InitializeComponent();
+            CenterToParent();
             Settings = settings;
         }
 
@@ -61,15 +62,24 @@ namespace Manager
 
                 if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(openFileDialog.FileName))
                 {
-                    outpath = openFileDialog.FileName;
-                    btnSave.Enabled = true;
-                    btnLoadDefaults.Enabled = true;
+                    if((new System.IO.FileInfo(openFileDialog.FileName)).Extension == ".exe")
+                    {
+                        outpath = openFileDialog.FileName;
+                        btnSave.Enabled = true;
+                        btnLoadDefaults.Enabled = true;
+                    }
+                    else
+                    {
+                        MessageBox.Show("The selected file must be an executable ('.exe').", "Invalid file", MessageBoxButtons.OK);
+                        return;
+                    }
                 }
                 else
                 {
                     return; // Don't change anything because they canceled
                 }
             }
+
             switch (((Button)sender).Tag.ToString())
             {
                 case "android":
