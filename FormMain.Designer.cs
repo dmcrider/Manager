@@ -35,6 +35,7 @@
             this.toolStripMenuItemSettings = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItemConfigure = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItemExclude = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItemLaunchers = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItemAbout = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItemVersion = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItemUpdates = new System.Windows.Forms.ToolStripMenuItem();
@@ -63,7 +64,8 @@
             this.txtTotalTime = new System.Windows.Forms.TextBox();
             this.lblTotal = new System.Windows.Forms.Label();
             this.grpOpenProject = new System.Windows.Forms.GroupBox();
-            this.toolStripMenuItemLaunchers = new System.Windows.Forms.ToolStripMenuItem();
+            this.btnNotes = new System.Windows.Forms.Button();
+            this.btnUnity = new System.Windows.Forms.Button();
             this.menuStripMain.SuspendLayout();
             this.grpProjectDetails.SuspendLayout();
             this.grpTime.SuspendLayout();
@@ -118,6 +120,12 @@
             this.toolStripMenuItemExclude.Name = "toolStripMenuItemExclude";
             this.toolStripMenuItemExclude.Size = new System.Drawing.Size(191, 26);
             this.toolStripMenuItemExclude.Text = "Exclude Projects";
+            // 
+            // toolStripMenuItemLaunchers
+            // 
+            this.toolStripMenuItemLaunchers.Name = "toolStripMenuItemLaunchers";
+            this.toolStripMenuItemLaunchers.Size = new System.Drawing.Size(191, 26);
+            this.toolStripMenuItemLaunchers.Text = "Launchers";
             // 
             // toolStripMenuItemAbout
             // 
@@ -294,7 +302,7 @@
             // 
             this.btnFileExplorer.BackgroundImage = global::Manager.Properties.Resources.FileExplorer_Large;
             this.btnFileExplorer.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.btnFileExplorer.Location = new System.Drawing.Point(294, 39);
+            this.btnFileExplorer.Location = new System.Drawing.Point(348, 38);
             this.btnFileExplorer.Name = "btnFileExplorer";
             this.btnFileExplorer.Size = new System.Drawing.Size(72, 48);
             this.btnFileExplorer.TabIndex = 3;
@@ -390,28 +398,45 @@
             // 
             // grpOpenProject
             // 
+            this.grpOpenProject.Controls.Add(this.btnUnity);
             this.grpOpenProject.Controls.Add(this.btnFileExplorer);
             this.grpOpenProject.Controls.Add(this.btnAndroidStudio);
             this.grpOpenProject.Controls.Add(this.btnVSCommunity);
             this.grpOpenProject.Controls.Add(this.btnVSCode);
             this.grpOpenProject.Location = new System.Drawing.Point(270, 560);
             this.grpOpenProject.Name = "grpOpenProject";
-            this.grpOpenProject.Size = new System.Drawing.Size(375, 98);
+            this.grpOpenProject.Size = new System.Drawing.Size(441, 98);
             this.grpOpenProject.TabIndex = 9;
             this.grpOpenProject.TabStop = false;
             this.grpOpenProject.Text = "Open Project";
             // 
-            // toolStripMenuItemLaunchers
+            // btnNotes
             // 
-            this.toolStripMenuItemLaunchers.Name = "toolStripMenuItemLaunchers";
-            this.toolStripMenuItemLaunchers.Size = new System.Drawing.Size(191, 26);
-            this.toolStripMenuItemLaunchers.Text = "Launchers";
+            this.btnNotes.Location = new System.Drawing.Point(1019, 487);
+            this.btnNotes.Name = "btnNotes";
+            this.btnNotes.Size = new System.Drawing.Size(133, 30);
+            this.btnNotes.TabIndex = 10;
+            this.btnNotes.Text = "Project Notes";
+            this.btnNotes.UseVisualStyleBackColor = true;
+            this.btnNotes.Click += new System.EventHandler(this.BtnNotes_Click);
+            // 
+            // btnUnity
+            // 
+            this.btnUnity.BackgroundImage = global::Manager.Properties.Resources.unity_small;
+            this.btnUnity.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.btnUnity.Location = new System.Drawing.Point(260, 38);
+            this.btnUnity.Name = "btnUnity";
+            this.btnUnity.Size = new System.Drawing.Size(50, 50);
+            this.btnUnity.TabIndex = 4;
+            this.toolTip.SetToolTip(this.btnUnity, "Unity");
+            this.btnUnity.UseVisualStyleBackColor = true;
             // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 21F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1164, 722);
+            this.Controls.Add(this.btnNotes);
             this.Controls.Add(this.grpOpenProject);
             this.Controls.Add(this.grpTime);
             this.Controls.Add(this.btnGitChangeBranch);
@@ -476,6 +501,8 @@
         private System.Windows.Forms.Button btnVSCode;
         private System.Windows.Forms.Button btnFileExplorer;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemLaunchers;
+        private System.Windows.Forms.Button btnNotes;
+        private System.Windows.Forms.Button btnUnity;
     }
 }
 

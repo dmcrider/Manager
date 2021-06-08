@@ -43,6 +43,9 @@ namespace Manager
             this.btnLoadDefaults = new System.Windows.Forms.Button();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.lblInstructions = new System.Windows.Forms.Label();
+            this.btnUnity = new System.Windows.Forms.Button();
+            this.txtUnityPath = new System.Windows.Forms.TextBox();
+            this.lblUnity = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // lblAndroid
@@ -131,7 +134,7 @@ namespace Manager
             // 
             // btnCancel
             // 
-            this.btnCancel.Location = new System.Drawing.Point(12, 228);
+            this.btnCancel.Location = new System.Drawing.Point(12, 337);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(83, 34);
             this.btnCancel.TabIndex = 9;
@@ -141,7 +144,7 @@ namespace Manager
             // 
             // btnSave
             // 
-            this.btnSave.Location = new System.Drawing.Point(833, 228);
+            this.btnSave.Location = new System.Drawing.Point(833, 337);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(83, 34);
             this.btnSave.TabIndex = 10;
@@ -151,7 +154,7 @@ namespace Manager
             // 
             // btnLoadDefaults
             // 
-            this.btnLoadDefaults.Location = new System.Drawing.Point(377, 228);
+            this.btnLoadDefaults.Location = new System.Drawing.Point(377, 337);
             this.btnLoadDefaults.Name = "btnLoadDefaults";
             this.btnLoadDefaults.Size = new System.Drawing.Size(174, 34);
             this.btnLoadDefaults.TabIndex = 11;
@@ -172,11 +175,42 @@ namespace Manager
             this.lblInstructions.TabIndex = 12;
             this.lblInstructions.Text = "Please select the executable file for each program (e.g. studio.exe)";
             // 
+            // btnUnity
+            // 
+            this.btnUnity.Location = new System.Drawing.Point(861, 212);
+            this.btnUnity.Name = "btnUnity";
+            this.btnUnity.Size = new System.Drawing.Size(56, 29);
+            this.btnUnity.TabIndex = 15;
+            this.btnUnity.Tag = "unity";
+            this.btnUnity.Text = "...";
+            this.btnUnity.UseVisualStyleBackColor = true;
+            this.btnUnity.Click += new System.EventHandler(this.BtnChangePath_Click);
+            // 
+            // txtUnityPath
+            // 
+            this.txtUnityPath.Location = new System.Drawing.Point(219, 213);
+            this.txtUnityPath.Name = "txtUnityPath";
+            this.txtUnityPath.ReadOnly = true;
+            this.txtUnityPath.Size = new System.Drawing.Size(635, 29);
+            this.txtUnityPath.TabIndex = 14;
+            // 
+            // lblUnity
+            // 
+            this.lblUnity.AutoSize = true;
+            this.lblUnity.Location = new System.Drawing.Point(163, 216);
+            this.lblUnity.Name = "lblUnity";
+            this.lblUnity.Size = new System.Drawing.Size(50, 21);
+            this.lblUnity.TabIndex = 13;
+            this.lblUnity.Text = "Unity:";
+            // 
             // FormLaunchers
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 21F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(929, 274);
+            this.ClientSize = new System.Drawing.Size(929, 380);
+            this.Controls.Add(this.btnUnity);
+            this.Controls.Add(this.txtUnityPath);
+            this.Controls.Add(this.lblUnity);
             this.Controls.Add(this.lblInstructions);
             this.Controls.Add(this.btnLoadDefaults);
             this.Controls.Add(this.btnSave);
@@ -215,5 +249,8 @@ namespace Manager
         private System.Windows.Forms.Button btnLoadDefaults;
         private System.Windows.Forms.OpenFileDialog openFileDialog;
         private System.Windows.Forms.Label lblInstructions;
+        private System.Windows.Forms.Button btnUnity;
+        private System.Windows.Forms.TextBox txtUnityPath;
+        private System.Windows.Forms.Label lblUnity;
     }
 }

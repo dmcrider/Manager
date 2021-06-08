@@ -17,6 +17,7 @@ namespace Manager
         public FormLaunchers(UserSettings settings)
         {
             InitializeComponent();
+            CenterToParent();
             Settings = settings;
         }
 
@@ -26,6 +27,7 @@ namespace Manager
             txtAndroidStudioPath.Text = Settings.AndroidStudioExecutableLocation;
             txtVSCodePath.Text = Settings.VSCodeExecutableLocation;
             txtVSCommunityPath.Text = Settings.VSCommunityExecutableLocation;
+            txtUnityPath.Text = Settings.UnityExecutableLocation;
         }
 
         private void BtnChangePath_Click(object sender, EventArgs e)
@@ -47,6 +49,9 @@ namespace Manager
                         case "vscommunity":
                             openFileDialog.InitialDirectory = Properties.Settings.Default.VisualStudioPath;
                             break;
+                        case "unity":
+                            openFileDialog.InitialDirectory = Properties.Settings.Default.UnityPath;
+                            break;
                         default:
                             break;
                     }
@@ -61,15 +66,24 @@ namespace Manager
 
                 if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(openFileDialog.FileName))
                 {
-                    outpath = openFileDialog.FileName;
-                    btnSave.Enabled = true;
-                    btnLoadDefaults.Enabled = true;
+                    if((new System.IO.FileInfo(openFileDialog.FileName)).Extension == ".exe")
+                    {
+                        outpath = openFileDialog.FileName;
+                        btnSave.Enabled = true;
+                        btnLoadDefaults.Enabled = true;
+                    }
+                    else
+                    {
+                        MessageBox.Show("The selected file must be an executable ('.exe').", "Invalid file", MessageBoxButtons.OK);
+                        return;
+                    }
                 }
                 else
                 {
                     return; // Don't change anything because they canceled
                 }
             }
+
             switch (((Button)sender).Tag.ToString())
             {
                 case "android":
@@ -81,6 +95,9 @@ namespace Manager
                 case "vscommunity":
                     txtVSCommunityPath.Text = outpath;
                     break;
+                case "unity":
+                    txtUnityPath.Text = outpath;
+                    break;
                 default:
                     break;
             }
@@ -91,6 +108,7 @@ namespace Manager
             txtAndroidStudioPath.Text = Properties.Settings.Default.AndroidStudioPath;
             txtVSCodePath.Text = Properties.Settings.Default.VSCodePath;
             txtVSCommunityPath.Text = Properties.Settings.Default.VisualStudioPath;
+            txtUnityPath.Text = Properties.Settings.Default.UnityPath;
 
             btnLoadDefaults.Enabled = false;
         }
@@ -106,6 +124,7 @@ namespace Manager
             Settings.AndroidStudioExecutableLocation = txtAndroidStudioPath.Text;
             Settings.VSCodeExecutableLocation = txtVSCodePath.Text;
             Settings.VSCommunityExecutableLocation = txtVSCommunityPath.Text;
+            Settings.UnityExecutableLocation = txtUnityPath.Text;
 
             DialogResult = DialogResult.OK;
             Close();

@@ -16,6 +16,7 @@ namespace Manager
         public string VSCodeExecutableLocation { get; set; }
         public string VSCommunityExecutableLocation { get; set; }
         public string AndroidStudioExecutableLocation { get; set; }
+        public string UnityExecutableLocation { get; set; }
 
         public UserSettings()
         {
@@ -26,9 +27,10 @@ namespace Manager
             VSCodeExecutableLocation = "";
             VSCommunityExecutableLocation = "";
             AndroidStudioExecutableLocation = "";
+            UnityExecutableLocation = "";
         }
 
-        public UserSettings(DateTimePattern datePattern, DateTimePattern timePattern, string masterRootPath, List<Project> excluded, string vsCode, string vsCommunity, string android)
+        public UserSettings(DateTimePattern datePattern, DateTimePattern timePattern, string masterRootPath, List<Project> excluded, string vsCode, string vsCommunity, string android, string unity)
         {
             DatePattern = datePattern;
             TimePattern = timePattern;
@@ -37,11 +39,12 @@ namespace Manager
             VSCodeExecutableLocation = vsCode;
             VSCommunityExecutableLocation = vsCommunity;
             AndroidStudioExecutableLocation = android;
+            UnityExecutableLocation = unity;
         }
 
         public string GetDateTimeFormat()
         {
-            return $"{DatePattern} {TimePattern}";
+            return $"{DatePattern.Format} {TimePattern.Format}";
         }
     }
 }

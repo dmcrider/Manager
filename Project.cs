@@ -38,9 +38,28 @@ namespace Manager
             return $"{Name}: {RootDirectory}";
         }
 
-        public string TimeLogPath()
+        public string TimeLogPath
         {
-            return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), $"TimeLogs\\{this.Name.ToLower().Trim().Replace(" ", "")}_timelog.json");
+            get
+            {
+                return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), $"TimeLogs\\{this.Name.ToLower().Trim().Replace(" ", "")}_timelog.json");
+            }
+        }
+
+        public string NotesDirectory
+        {
+            get
+            {
+                return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Notes");
+            }
+        }
+
+        public string NotesPath
+        {
+            get
+            {
+                return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), $"Notes\\{this.Name.ToLower().Trim().Replace(" ", "")}_notes.json");
+            }
         }
     }
 

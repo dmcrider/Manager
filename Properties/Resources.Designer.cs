@@ -133,6 +133,16 @@ namespace Manager.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap unity_small {
+            get {
+                object obj = ResourceManager.GetObject("unity_small", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap VisualStudio_25x25 {
             get {
                 object obj = ResourceManager.GetObject("VisualStudio_25x25", resourceCulture);
