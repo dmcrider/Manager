@@ -56,6 +56,7 @@ namespace Manager
             this.txtTitle.TabIndex = 1;
             this.txtTitle.Text = "Note Title";
             this.txtTitle.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.txtTitle.Click += new System.EventHandler(this.TxtTitle_Click);
             // 
             // txtBody
             // 

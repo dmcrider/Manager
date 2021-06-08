@@ -27,6 +27,7 @@ namespace Manager
             txtAndroidStudioPath.Text = Settings.AndroidStudioExecutableLocation;
             txtVSCodePath.Text = Settings.VSCodeExecutableLocation;
             txtVSCommunityPath.Text = Settings.VSCommunityExecutableLocation;
+            txtUnityPath.Text = Settings.UnityExecutableLocation;
         }
 
         private void BtnChangePath_Click(object sender, EventArgs e)
@@ -47,6 +48,9 @@ namespace Manager
                             break;
                         case "vscommunity":
                             openFileDialog.InitialDirectory = Properties.Settings.Default.VisualStudioPath;
+                            break;
+                        case "unity":
+                            openFileDialog.InitialDirectory = Properties.Settings.Default.UnityPath;
                             break;
                         default:
                             break;
@@ -91,6 +95,9 @@ namespace Manager
                 case "vscommunity":
                     txtVSCommunityPath.Text = outpath;
                     break;
+                case "unity":
+                    txtUnityPath.Text = outpath;
+                    break;
                 default:
                     break;
             }
@@ -101,6 +108,7 @@ namespace Manager
             txtAndroidStudioPath.Text = Properties.Settings.Default.AndroidStudioPath;
             txtVSCodePath.Text = Properties.Settings.Default.VSCodePath;
             txtVSCommunityPath.Text = Properties.Settings.Default.VisualStudioPath;
+            txtUnityPath.Text = Properties.Settings.Default.UnityPath;
 
             btnLoadDefaults.Enabled = false;
         }
@@ -116,6 +124,7 @@ namespace Manager
             Settings.AndroidStudioExecutableLocation = txtAndroidStudioPath.Text;
             Settings.VSCodeExecutableLocation = txtVSCodePath.Text;
             Settings.VSCommunityExecutableLocation = txtVSCommunityPath.Text;
+            Settings.UnityExecutableLocation = txtUnityPath.Text;
 
             DialogResult = DialogResult.OK;
             Close();

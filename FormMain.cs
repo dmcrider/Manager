@@ -80,7 +80,7 @@ namespace Manager
             lblLastUpdatedValue.Text = GetLastUpdatedTime(e.Project.RootDirectory);
             GitEnabled = e.Project.EnableGitLog;
             isTimerPaused = false;
-            btnNotes.Tag = e.Project.NotesPath;
+            btnNotes.Tag = new string[] {e.Project.NotesPath, e.Project.NotesDirectory};
             UpdateUI();
         }
 
@@ -208,6 +208,7 @@ namespace Manager
             Settings.AndroidStudioExecutableLocation = Settings.AndroidStudioExecutableLocation == "" ? Properties.Settings.Default.AndroidStudioPath : Settings.AndroidStudioExecutableLocation;
             Settings.VSCodeExecutableLocation = Settings.VSCodeExecutableLocation == "" ? Properties.Settings.Default.VSCodePath : Settings.VSCodeExecutableLocation;
             Settings.VSCommunityExecutableLocation = Settings.VSCommunityExecutableLocation == "" ? Properties.Settings.Default.VisualStudioPath : Settings.VSCommunityExecutableLocation;
+            Settings.UnityExecutableLocation = Settings.UnityExecutableLocation == "" ? Properties.Settings.Default.UnityPath : Settings.UnityExecutableLocation;
         }
 
         private void LoadDefaultLocations()
@@ -215,6 +216,7 @@ namespace Manager
             Properties.Settings.Default.AndroidStudioPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "Android\\Android Studio\\studio64.exe");
             Properties.Settings.Default.VSCodePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Program\\Microsoft VS Code\\Code.exe");
             Properties.Settings.Default.VisualStudioPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), "Microsoft Visual Studio\\2019\\Community\\devenv.exe");
+            Properties.Settings.Default.UnityPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "Unity\\Editor\\Unity.exe");
 
             Properties.Settings.Default.Save();
         }
@@ -639,8 +641,8 @@ namespace Manager
         #region Notes
         private void BtnNotes_Click(object sender, EventArgs e)
         {
-            string notesPath = ((Button)sender).Tag.ToString();
-            FormNotes formNotes = new FormNotes(notesPath);
+            string[] notes = ((Button)sender).Tag as string[];
+            FormNotes formNotes = new FormNotes(notes[0], notes[1]);
             formNotes.ShowDialog();
         }
         #endregion
@@ -676,7 +678,9 @@ namespace Manager
 
         private string GetLastUpdatedTime(string root)
         {
-            return new DirectoryInfo(root).EnumerateFiles().OrderByDescending(f => f.LastWriteTime).FirstOrDefault().LastWriteTime.ToString(Settings.GetDateTimeFormat());
+            var file = new DirectoryInfo(root).EnumerateFiles().OrderByDescending(f => f.LastWriteTime).FirstOrDefault();
+            if(file == null) { return "UNKNOWN"; }
+            return file.LastWriteTime.ToString(Settings.GetDateTimeFormat());
         }
 
         public List<string> GetGitResponse(string command)

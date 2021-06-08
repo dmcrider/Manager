@@ -15,6 +15,7 @@ namespace Manager
     public partial class FormNotes : Form
     {
         private string _notesPath;
+        private string _notesDir;
         private List<Note> _notes;
         private BindingList<Note> _bindingNotes;
         private readonly BindingSource bindingSourceNotes = new BindingSource();
@@ -43,14 +44,16 @@ namespace Manager
             CenterToParent();
         }
 
-        public FormNotes(string path) : this()
+        public FormNotes(string path, string dir) : this()
         {
             _notesPath = path;
+            _notesDir = dir;
         }
 
         private void FormNotes_Load(object sender, EventArgs e)
         {
             LoadNotes();
+            UpdateUI();
             listboxNotes.SelectedIndexChanged += ListboxNotes_SelectedIndexChanged;
             SelectedNoteChanged += FormNotes_SelectedNoteChanged;
             NoteListChanged += FormNotes_NoteListChanged;
@@ -73,14 +76,14 @@ namespace Manager
             {
                 txtTitle.Text = string.Empty;
                 txtBody.Text = string.Empty;
-                btnSaveClose.Tag = btnDelete.Tag = null;
+                btnSaveClose.Tag = btnSave.Tag = btnDelete.Tag = null;
             }
             else
             {
                 _selectedNote = e.Note;
                 txtTitle.Text = _selectedNote.Title;
                 txtBody.Text = _selectedNote.Body;
-                btnDelete.Tag = btnSaveClose.Tag = _selectedNote;
+                btnDelete.Tag = btnSave.Tag = btnSaveClose.Tag = _selectedNote;
             }
         }
 
@@ -100,7 +103,7 @@ namespace Manager
 
             _bindingNotes.Add(newNote);
             ReloadNotes(_bindingNotes);
-            listboxNotes.SelectedIndex = listboxNotes.Items.IndexOf(newNote);
+            listboxNotes.SelectedIndex = _bindingNotes.IndexOf(newNote);
         }
 
         private void BtnDelete_Click(object sender, EventArgs e)
@@ -148,6 +151,11 @@ namespace Manager
             }
         }
 
+        private void TxtTitle_Click(object sender, EventArgs e)
+        {
+            txtTitle.SelectAll();
+        }
+
         private void ReloadNotes(BindingList<Note> list)
         {
             if(list.Count == 0)
@@ -160,7 +168,16 @@ namespace Manager
                 });
             }
 
-            ResetNoteSource(list);
+            BindingList<Note> cleanNotes = new BindingList<Note>();
+            foreach(var item in list)
+            {
+                if (item.IsArchived == false)
+                {
+                    cleanNotes.Add(item);
+                }
+            }
+
+            ResetNoteSource(cleanNotes);
         }
 
         private void ResetNoteSource(BindingList<Note> list)
@@ -169,7 +186,7 @@ namespace Manager
             listboxNotes.DataSource = bindingSourceNotes;
             listboxNotes.DisplayMember = "Title";
 
-            listboxNotes.SelectedIndex = -1;
+            listboxNotes.SelectedIndex = 0;
         }
 
         private void LoadNotes()
@@ -195,6 +212,11 @@ namespace Manager
 
         private void SaveNotes()
         {
+            if (!Directory.Exists(_notesDir))
+            {
+                Directory.CreateDirectory(_notesDir);
+            }
+
             if (!File.Exists(_notesPath))
             {
                 File.Create(_notesPath).Dispose();
@@ -210,6 +232,13 @@ namespace Manager
 
             string jsonOut = JsonConvert.SerializeObject(projNote);
             File.WriteAllText(_notesPath, jsonOut);
+        }
+
+        private void UpdateUI()
+        {
+            Note selectedNote = listboxNotes.SelectedItem as Note;
+            txtTitle.Text = selectedNote.Title;
+            txtBody.Text = selectedNote.Body;
         }
     }
 

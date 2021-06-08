@@ -46,6 +46,14 @@ namespace Manager
             }
         }
 
+        public string NotesDirectory
+        {
+            get
+            {
+                return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Notes");
+            }
+        }
+
         public string NotesPath
         {
             get
