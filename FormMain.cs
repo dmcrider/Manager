@@ -37,6 +37,33 @@ namespace Manager
         }
         #endregion
 
+        #region Event Handler Implementation
+        private void FormMain_SelectedProjectChanged(object sender, SelectedProjectChangedEventArgs e)
+        {
+            // Update the displayed info
+            if (e.Project == null) { return; }
+            SelectedProject = e.Project;
+            lblProjectName.Text = e.Project.Name;
+            lblProjectLocation.Text = e.Project.RootDirectory;
+            lblLastUpdatedValue.Text = GetLastUpdatedTime(e.Project.RootDirectory);
+            GitEnabled = e.Project.EnableGitLog;
+            isTimerPaused = false;
+            btnNotes.Tag = new string[] { e.Project.NotesPath, e.Project.NotesDirectory };
+            UpdateUI();
+        }
+
+        private void FormMain_ProjectListChanged(object sender, ProjectListChangedEventArgs e)
+        {
+            ProjectList = e.NewList;
+            ResetLoadedProjects();
+        }
+
+        private void ListboxProjects_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            OnSelectedProjectChanged(new SelectedProjectChangedEventArgs(listboxProjects.SelectedItem as Project));
+        }
+        #endregion
+
         private readonly BindingSource bindingSourceProjects = new BindingSource();
         private bool GitEnabled;
         private bool isTimerPaused;
@@ -53,15 +80,20 @@ namespace Manager
         {
             ValidateSettings();
             InitializeMenuStripClickMethods();
+
+            // Initialize some stuff so we don't have nulls
             ProjectList = new BindingList<Project>();
             projectStopwatch = new Stopwatch();
 
             SelectedProjectChanged += FormMain_SelectedProjectChanged;
             ProjectListChanged += FormMain_ProjectListChanged;
 
+            // Load Configs
             LoadUserConfig();
             LoadLauncherConfig();
 
+            // Set the initial Project to display
+            // if there is one
             if(ProjectList.Count > 0)
             {
                 SelectedProject = listboxProjects.SelectedItem as Project;
@@ -69,51 +101,33 @@ namespace Manager
             }
         }
 
-        #region Event Handler Implementation
-        private void FormMain_SelectedProjectChanged(object sender, SelectedProjectChangedEventArgs e)
-        {
-            // Update the displayed info
-            if (e.Project == null) { return; }
-            SelectedProject = e.Project;
-            lblProjectName.Text = e.Project.Name;
-            lblProjectLocation.Text = e.Project.RootDirectory;
-            lblLastUpdatedValue.Text = GetLastUpdatedTime(e.Project.RootDirectory);
-            GitEnabled = e.Project.EnableGitLog;
-            isTimerPaused = false;
-            btnNotes.Tag = new string[] {e.Project.NotesPath, e.Project.NotesDirectory};
-            UpdateUI();
-        }
-
-        private void FormMain_ProjectListChanged(object sender, ProjectListChangedEventArgs e)
-        {
-            ProjectList = e.NewList;
-            ResetLoadedProjects();
-        }
-
-        private void ListboxProjects_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            OnSelectedProjectChanged(new SelectedProjectChangedEventArgs(listboxProjects.SelectedItem as Project));
-        }
-        #endregion
-
         #region Save & Load
         private void UpdateUI()
         {
             #region Git History
             if (GitEnabled)
             {
-                btnGitChangeBranch.Visible = btnGitRefresh.Visible = txtGitHistory.Visible = lblGitBranch.Visible = lblGitBranchValue.Visible = true;
-                btnGitRefresh.PerformClick();
-
-                var branches = GetGitResponse("branch");
-
-                foreach (var line in branches)
+                if (ProgramIsInstalled("Git"))
                 {
-                    if (line[0] == '*')
+                    btnGitChangeBranch.Visible = btnGitRefresh.Visible = txtGitHistory.Visible = lblGitBranch.Visible = lblGitBranchValue.Visible = true;
+                    btnGitRefresh.PerformClick();
+
+                    var branches = GetGitResponse("branch");
+
+                    foreach (var line in branches)
                     {
-                        lblGitBranchValue.Text = line.Substring(2);
-                        break;
+                        if (line[0] == '*')
+                        {
+                            lblGitBranchValue.Text = line.Substring(2);
+                            break;
+                        }
                     }
+                }
+                else
+                {
+                    MessageBox.Show("Git does not appear to be installed. Please install it and try again.");
+                    GitEnabled = false;
+                    UpdateUI();
                 }
             }
             else
@@ -168,6 +182,13 @@ namespace Manager
             #region Open With
             if(SelectedProject.DefaultLauncher != null)
             {
+                // VSCode and Visual Studio have their registry keys in different locations
+                // and formatted differently, so they get unique methods
+                btnAndroidStudio.Visible = Launcher.ProgramIsInstalled("Android Studio");
+                btnUnity.Visible = Launcher.ProgramIsInstalled("Unity");
+                btnVSCode.Visible = Launcher.VSCodeIsInstalled();
+                btnVSCommunity.Visible = Launcher.VisualStudioIsInstalled();
+
 
                 if (SelectedProject.DefaultLauncher.Value == Launcher.None.Value)
                 {
@@ -703,23 +724,30 @@ namespace Manager
             startInfo.RedirectStandardInput = true;
             startInfo.RedirectStandardOutput = true;
             startInfo.Arguments = command;
-
-            Process process = new Process();
-            process.StartInfo = startInfo;
-            process.Start();
-
             List<string> output = new List<string>();
-            string lineVal = process.StandardOutput.ReadLine();
 
-            while (lineVal != null)
+            try
+            {
+                Process process = new Process();
+                process.StartInfo = startInfo;
+                process.Start();
+
+                string lineVal = process.StandardOutput.ReadLine();
+
+                while (lineVal != null)
+                {
+
+                    output.Add(lineVal);
+                    lineVal = process.StandardOutput.ReadLine();
+
+                }
+
+                process.WaitForExit();
+            }
+            catch (Exception ex)
             {
 
-                output.Add(lineVal);
-                lineVal = process.StandardOutput.ReadLine();
-
             }
-
-            process.WaitForExit();
 
             return output;
         }
@@ -752,6 +780,7 @@ namespace Manager
         }
     }
 
+    #region Custom EventArgs
     public class SelectedProjectChangedEventArgs : EventArgs
     {
         public Project Project { get; set; }
@@ -771,4 +800,5 @@ namespace Manager
             NewList = newList;
         }
     }
+    #endregion
 }
