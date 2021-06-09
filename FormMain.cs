@@ -107,7 +107,7 @@ namespace Manager
             #region Git History
             if (GitEnabled)
             {
-                if (ProgramIsInstalled("Git"))
+                if (Launcher.ProgramIsInstalled("Git"))
                 {
                     btnGitChangeBranch.Visible = btnGitRefresh.Visible = txtGitHistory.Visible = lblGitBranch.Visible = lblGitBranchValue.Visible = true;
                     btnGitRefresh.PerformClick();
