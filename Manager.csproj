@@ -4,6 +4,15 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net5.0-windows</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
+    <PackageId>com.dayloncrider.manager</PackageId>
+    <Authors>Daylon Crider</Authors>
+    <Description>A tool to help manage your side projects.</Description>
+    <Copyright>2021</Copyright>
+    <PackageProjectUrl>https://dayloncrider.com/projects/manager</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/dmcrider/Manager</RepositoryUrl>
+    <SignAssembly>true</SignAssembly>
+    <DelaySign>false</DelaySign>
+    <AssemblyOriginatorKeyFile>ManagerSignKey.pfx</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
   <ItemGroup>
