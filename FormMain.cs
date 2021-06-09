@@ -166,29 +166,33 @@ namespace Manager
             #endregion
 
             #region Open With
-            if(SelectedProject.DefaultLauncher.Value == Launcher.None.Value)
+            if(SelectedProject.DefaultLauncher != null)
             {
-                btnAndroidStudio.Enabled = false;
-                btnVSCode.Enabled = false;
-                btnVSCommunity.Enabled = false;
-            }
-            else if(SelectedProject.DefaultLauncher.Value == Launcher.AndroidStudio.Value)
-            {
-                btnAndroidStudio.Enabled = true;
-                btnVSCode.Enabled = false;
-                btnVSCommunity.Enabled = false;
-            }
-            else if(SelectedProject.DefaultLauncher.Value == Launcher.VisualStudioCode.Value)
-            {
+
+                if (SelectedProject.DefaultLauncher.Value == Launcher.None.Value)
+                {
+                    btnAndroidStudio.Enabled = false;
+                    btnVSCode.Enabled = false;
+                    btnVSCommunity.Enabled = false;
+                }
+                else if (SelectedProject.DefaultLauncher.Value == Launcher.AndroidStudio.Value)
+                {
+                    btnAndroidStudio.Enabled = true;
+                    btnVSCode.Enabled = false;
+                    btnVSCommunity.Enabled = false;
+                }
+                else if (SelectedProject.DefaultLauncher.Value == Launcher.VisualStudioCode.Value)
+                {
                     btnAndroidStudio.Enabled = false;
                     btnVSCode.Enabled = true;
                     btnVSCommunity.Enabled = false;
-            }
-            else if(SelectedProject.DefaultLauncher.Value == Launcher.VisualStudioCommunity.Value)
-            {
-                btnAndroidStudio.Enabled = false;
-                btnVSCode.Enabled = false;
-                btnVSCommunity.Enabled = true;
+                }
+                else if (SelectedProject.DefaultLauncher.Value == Launcher.VisualStudioCommunity.Value)
+                {
+                    btnAndroidStudio.Enabled = false;
+                    btnVSCode.Enabled = false;
+                    btnVSCommunity.Enabled = true;
+                }
             }
             else
             {
@@ -252,6 +256,19 @@ namespace Manager
                 File.Create(configFile).Dispose();
             }
 
+            // Load any new projects that have been added to the Master Root Path
+            // if the user has configured it
+            if (!string.IsNullOrEmpty(Settings.MasterRootPath))
+            {
+                var projectsInRoot = AddProjects(Settings.MasterRootPath);
+
+                foreach(Project p in projectsInRoot)
+                {
+                    if (ProjectList.Contains(p)) { continue; }
+                    retval.Add(p);
+                }
+            }
+
             return retval;
         }
 
@@ -274,15 +291,6 @@ namespace Manager
             else
             {
                 Settings = new UserSettings();
-            }
-
-            if (!string.IsNullOrEmpty(Settings.MasterRootPath) && !string.IsNullOrWhiteSpace(Settings.MasterRootPath))
-            {
-                ProjectList = AddProjects(Settings.MasterRootPath);
-            }
-            else
-            {
-                ProjectList = new BindingList<Project>();
             }
         }
         #endregion
@@ -399,7 +407,9 @@ namespace Manager
         {
             BindingList<Project> retVal = new BindingList<Project>();
 
-            foreach(var folder in System.IO.Directory.GetDirectories(path))
+            var directories = System.IO.Directory.GetDirectories(path);
+
+            foreach (var folder in directories)
             {
                 Project temp = new Project()
                 {

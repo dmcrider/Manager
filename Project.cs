@@ -38,6 +38,31 @@ namespace Manager
             return $"{Name}: {RootDirectory}";
         }
 
+        public override int GetHashCode()
+        {
+            return RootDirectory.GetHashCode();
+        }
+
+        public override bool Equals(object obj)
+        {
+            if(obj == null) { return false; }
+            Project compProj = obj as Project;
+            if(compProj == null)
+            {
+                return false;
+            }
+            else
+            {
+                return Equals(compProj);
+            }
+        }
+
+        private bool Equals(Project p)
+        {
+            if(p == null) { return false; }
+            return this.RootDirectory == p.RootDirectory;
+        }
+
         public string TimeLogPath
         {
             get
@@ -81,5 +106,6 @@ namespace Manager
         public static Launcher AndroidStudio = new Launcher("Android Studio", 1);
         public static Launcher VisualStudioCode = new Launcher("Visual Studio Code", 2);
         public static Launcher VisualStudioCommunity = new Launcher("Visual Studio Community", 3);
+        public static Launcher Unity = new Launcher("Unity", 4);
     }
 }

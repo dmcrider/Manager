@@ -31,11 +31,11 @@ namespace Manager
         {
             this.listboxNotes = new System.Windows.Forms.ListBox();
             this.txtTitle = new System.Windows.Forms.TextBox();
-            this.txtBody = new System.Windows.Forms.TextBox();
             this.btnDelete = new System.Windows.Forms.Button();
             this.btnSaveClose = new System.Windows.Forms.Button();
             this.btnSave = new System.Windows.Forms.Button();
             this.btnNew = new System.Windows.Forms.Button();
+            this.txtBody = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // listboxNotes
@@ -57,14 +57,6 @@ namespace Manager
             this.txtTitle.Text = "Note Title";
             this.txtTitle.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.txtTitle.Click += new System.EventHandler(this.TxtTitle_Click);
-            // 
-            // txtBody
-            // 
-            this.txtBody.Location = new System.Drawing.Point(290, 77);
-            this.txtBody.Multiline = true;
-            this.txtBody.Name = "txtBody";
-            this.txtBody.Size = new System.Drawing.Size(952, 421);
-            this.txtBody.TabIndex = 2;
             // 
             // btnDelete
             // 
@@ -106,6 +98,14 @@ namespace Manager
             this.btnNew.UseVisualStyleBackColor = true;
             this.btnNew.Click += new System.EventHandler(this.BtnNew_Click);
             // 
+            // txtBody
+            // 
+            this.txtBody.Location = new System.Drawing.Point(290, 77);
+            this.txtBody.Multiline = true;
+            this.txtBody.Name = "txtBody";
+            this.txtBody.Size = new System.Drawing.Size(952, 421);
+            this.txtBody.TabIndex = 2;
+            // 
             // FormNotes
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 21F);
@@ -132,10 +132,10 @@ namespace Manager
 
         private System.Windows.Forms.ListBox listboxNotes;
         private System.Windows.Forms.TextBox txtTitle;
-        private System.Windows.Forms.TextBox txtBody;
         private System.Windows.Forms.Button btnDelete;
         private System.Windows.Forms.Button btnSaveClose;
         private System.Windows.Forms.Button btnSave;
         private System.Windows.Forms.Button btnNew;
+        private System.Windows.Forms.TextBox txtBody;
     }
 }
