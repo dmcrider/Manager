@@ -180,39 +180,49 @@ namespace Manager
             #endregion
 
             #region Open With
-            if(SelectedProject.DefaultLauncher != null)
+            // VSCode and Visual Studio have their registry keys in different locations
+            // and formatted differently, so they get unique methods
+            btnAndroidStudio.Visible = Launcher.ProgramIsInstalled("Android Studio");
+            btnUnity.Visible = Launcher.ProgramIsInstalled("Unity");
+            btnVSCode.Visible = Launcher.VSCodeIsInstalled();
+            btnVSCommunity.Visible = Launcher.VisualStudioIsInstalled();
+
+            if (SelectedProject.DefaultLauncher != null)
             {
-                // VSCode and Visual Studio have their registry keys in different locations
-                // and formatted differently, so they get unique methods
-                btnAndroidStudio.Visible = Launcher.ProgramIsInstalled("Android Studio");
-                btnUnity.Visible = Launcher.ProgramIsInstalled("Unity");
-                btnVSCode.Visible = Launcher.VSCodeIsInstalled();
-                btnVSCommunity.Visible = Launcher.VisualStudioIsInstalled();
-
-
                 if (SelectedProject.DefaultLauncher.Value == Launcher.None.Value)
                 {
                     btnAndroidStudio.Enabled = false;
                     btnVSCode.Enabled = false;
                     btnVSCommunity.Enabled = false;
+                    btnUnity.Enabled = false;
                 }
                 else if (SelectedProject.DefaultLauncher.Value == Launcher.AndroidStudio.Value)
                 {
                     btnAndroidStudio.Enabled = true;
                     btnVSCode.Enabled = false;
                     btnVSCommunity.Enabled = false;
+                    btnUnity.Enabled = false;
                 }
                 else if (SelectedProject.DefaultLauncher.Value == Launcher.VisualStudioCode.Value)
                 {
                     btnAndroidStudio.Enabled = false;
                     btnVSCode.Enabled = true;
                     btnVSCommunity.Enabled = false;
+                    btnUnity.Enabled = false;
                 }
                 else if (SelectedProject.DefaultLauncher.Value == Launcher.VisualStudioCommunity.Value)
                 {
                     btnAndroidStudio.Enabled = false;
                     btnVSCode.Enabled = false;
                     btnVSCommunity.Enabled = true;
+                    btnUnity.Enabled = false;
+                }
+                else if (SelectedProject.DefaultLauncher.Value == Launcher.Unity.Value)
+                {
+                    btnAndroidStudio.Enabled = false;
+                    btnVSCode.Enabled = false;
+                    btnVSCommunity.Enabled = false;
+                    btnUnity.Enabled = true;
                 }
             }
             else
@@ -221,6 +231,7 @@ namespace Manager
                 btnAndroidStudio.Enabled = false;
                 btnVSCode.Enabled = false;
                 btnVSCommunity.Enabled = false;
+                btnUnity.Enabled = false;
             }
             #endregion
         }
