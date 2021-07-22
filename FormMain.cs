@@ -240,19 +240,42 @@ namespace Manager
         private void LoadLauncherConfig()
         {
             LoadDefaultLocations();
+            ValidateDefaultLocations();
 
             Settings.AndroidStudioExecutableLocation = Settings.AndroidStudioExecutableLocation == "" ? Properties.Settings.Default.AndroidStudioPath : Settings.AndroidStudioExecutableLocation;
             Settings.VSCodeExecutableLocation = Settings.VSCodeExecutableLocation == "" ? Properties.Settings.Default.VSCodePath : Settings.VSCodeExecutableLocation;
             Settings.VSCommunityExecutableLocation = Settings.VSCommunityExecutableLocation == "" ? Properties.Settings.Default.VisualStudioPath : Settings.VSCommunityExecutableLocation;
             Settings.UnityExecutableLocation = Settings.UnityExecutableLocation == "" ? Properties.Settings.Default.UnityPath : Settings.UnityExecutableLocation;
+
+            string output = "Please set the path to the following Editors before using them:\n\n";
+
+            output += Settings.AndroidStudioExecutableLocation == "" ? "Android Studio\n" : "";
+            output += Settings.VSCodeExecutableLocation == "" ? "Visual Studio Code\n" : "";
+            output += Settings.VSCommunityExecutableLocation == "" ? "Visual Studio Community\n" : "";
+            output += Settings.UnityExecutableLocation == "" ? "Unity\n" : "";
+
+            if(output != "Please set the path to the following Editors before using them:\n\n")
+            {
+                MessageBox.Show(output, "Default Paths Not Set", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
         }
 
         private void LoadDefaultLocations()
         {
             Properties.Settings.Default.AndroidStudioPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "Android\\Android Studio\\studio64.exe");
-            Properties.Settings.Default.VSCodePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Program\\Microsoft VS Code\\Code.exe");
+            Properties.Settings.Default.VSCodePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Programs\\Microsoft VS Code\\Code.exe");
             Properties.Settings.Default.VisualStudioPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), "Microsoft Visual Studio\\2019\\Community\\devenv.exe");
             Properties.Settings.Default.UnityPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "Unity\\Editor\\Unity.exe");
+
+            Properties.Settings.Default.Save();
+        }
+
+        private void ValidateDefaultLocations()
+        {
+            Properties.Settings.Default.AndroidStudioPath = File.Exists(Properties.Settings.Default.AndroidStudioPath) ? Properties.Settings.Default.AndroidStudioPath : "";
+            Properties.Settings.Default.VSCodePath = File.Exists(Properties.Settings.Default.VSCodePath) ? Properties.Settings.Default.VSCodePath : "";
+            Properties.Settings.Default.VisualStudioPath = File.Exists(Properties.Settings.Default.VisualStudioPath) ? Properties.Settings.Default.VisualStudioPath : "";
+            Properties.Settings.Default.UnityPath = File.Exists(Properties.Settings.Default.UnityPath) ? Properties.Settings.Default.UnityPath : "";
 
             Properties.Settings.Default.Save();
         }
@@ -271,7 +294,7 @@ namespace Manager
             }
             catch(NullReferenceException ex)
             {
-                MessageBox.Show(ex.Message);
+                MessageBox.Show(ex.ToString());
             }
         }
 
@@ -375,7 +398,7 @@ namespace Manager
                     MessageBox.Show("Failed to save settings. Please try again later.");
                 }
                 string errorLogPath = Path.Combine(baseFilePath, $"ErrorLog_{DateTime.Now:yyyyMMdd_HHmmss}.txt");
-                CreateErrorLog(errorLogPath, ex.Message);
+                CreateErrorLog(errorLogPath, ex.ToString());
             }
         }
 
@@ -397,7 +420,7 @@ namespace Manager
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Failed to save projects. Please try again later.\n\n" + ex.Message);
+                MessageBox.Show("Failed to save projects. Please try again later.\n\n" + ex.ToString());
             }
         }
 
@@ -417,7 +440,7 @@ namespace Manager
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Failed to save time log.\n\n" + ex.Message);
+                MessageBox.Show("Failed to save time log.\n\n" + ex.ToString());
             }
         }
 
@@ -649,10 +672,13 @@ namespace Manager
 
         private void BtnVSCode_Click(object sender, EventArgs e)
         {
+            var args = SelectedProject.RootDirectory;
+            var fileName = Settings.VSCodeExecutableLocation;
+
             ProcessStartInfo psInfo = new ProcessStartInfo()
             {
-                Arguments = SelectedProject.MainProjectFile,
-                FileName = Settings.VSCodeExecutableLocation
+                Arguments = args,
+                FileName = fileName
             };
 
             LaunchProject(ErrorMessages.FailedLaunchVSCode, startInfo: psInfo);
@@ -713,7 +739,7 @@ namespace Manager
             catch (Exception ex)
             {
                 string errorLogPath = Path.Combine(baseFilePath, $"ErrorLog_{DateTime.Now:yyyyMMdd_HHmmss}.txt");
-                CreateErrorLog(errorLogPath, ex.Message);
+                CreateErrorLog(errorLogPath, ex.ToString());
                 MessageBox.Show(failMessage + "\n\nError Log: " + errorLogPath, "Error launching project", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
