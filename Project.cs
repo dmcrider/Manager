@@ -87,25 +87,4 @@ namespace Manager
             }
         }
     }
-
-    [Serializable]
-    public class Launcher
-    {
-        public string Name { get; set; }
-        public int Value { get; set; }
-
-        public Launcher(string name, int value)
-        {
-            Name = name;
-            Value = value;
-        }
-
-        public Launcher() { }
-
-        public static Launcher None = new Launcher("None", 0);
-        public static Launcher AndroidStudio = new Launcher("Android Studio", 1);
-        public static Launcher VisualStudioCode = new Launcher("Visual Studio Code", 2);
-        public static Launcher VisualStudioCommunity = new Launcher("Visual Studio Community", 3);
-        public static Launcher Unity = new Launcher("Unity", 4);
-    }
 }

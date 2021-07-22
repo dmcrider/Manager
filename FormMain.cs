@@ -37,6 +37,33 @@ namespace Manager
         }
         #endregion
 
+        #region Event Handler Implementation
+        private void FormMain_SelectedProjectChanged(object sender, SelectedProjectChangedEventArgs e)
+        {
+            // Update the displayed info
+            if (e.Project == null) { return; }
+            SelectedProject = e.Project;
+            lblProjectName.Text = e.Project.Name;
+            lblProjectLocation.Text = e.Project.RootDirectory;
+            lblLastUpdatedValue.Text = GetLastUpdatedTime(e.Project.RootDirectory);
+            GitEnabled = e.Project.EnableGitLog;
+            isTimerPaused = false;
+            btnNotes.Tag = new string[] { e.Project.NotesPath, e.Project.NotesDirectory };
+            UpdateUI();
+        }
+
+        private void FormMain_ProjectListChanged(object sender, ProjectListChangedEventArgs e)
+        {
+            ProjectList = e.NewList;
+            ResetLoadedProjects();
+        }
+
+        private void ListboxProjects_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            OnSelectedProjectChanged(new SelectedProjectChangedEventArgs(listboxProjects.SelectedItem as Project));
+        }
+        #endregion
+
         private readonly BindingSource bindingSourceProjects = new BindingSource();
         private bool GitEnabled;
         private bool isTimerPaused;
@@ -53,15 +80,20 @@ namespace Manager
         {
             ValidateSettings();
             InitializeMenuStripClickMethods();
+
+            // Initialize some stuff so we don't have nulls
             ProjectList = new BindingList<Project>();
             projectStopwatch = new Stopwatch();
 
             SelectedProjectChanged += FormMain_SelectedProjectChanged;
             ProjectListChanged += FormMain_ProjectListChanged;
 
+            // Load Configs
             LoadUserConfig();
             LoadLauncherConfig();
 
+            // Set the initial Project to display
+            // if there is one
             if(ProjectList.Count > 0)
             {
                 SelectedProject = listboxProjects.SelectedItem as Project;
@@ -69,51 +101,33 @@ namespace Manager
             }
         }
 
-        #region Event Handler Implementation
-        private void FormMain_SelectedProjectChanged(object sender, SelectedProjectChangedEventArgs e)
-        {
-            // Update the displayed info
-            if (e.Project == null) { return; }
-            SelectedProject = e.Project;
-            lblProjectName.Text = e.Project.Name;
-            lblProjectLocation.Text = e.Project.RootDirectory;
-            lblLastUpdatedValue.Text = GetLastUpdatedTime(e.Project.RootDirectory);
-            GitEnabled = e.Project.EnableGitLog;
-            isTimerPaused = false;
-            btnNotes.Tag = new string[] {e.Project.NotesPath, e.Project.NotesDirectory};
-            UpdateUI();
-        }
-
-        private void FormMain_ProjectListChanged(object sender, ProjectListChangedEventArgs e)
-        {
-            ProjectList = e.NewList;
-            ResetLoadedProjects();
-        }
-
-        private void ListboxProjects_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            OnSelectedProjectChanged(new SelectedProjectChangedEventArgs(listboxProjects.SelectedItem as Project));
-        }
-        #endregion
-
         #region Save & Load
         private void UpdateUI()
         {
             #region Git History
             if (GitEnabled)
             {
-                btnGitChangeBranch.Visible = btnGitRefresh.Visible = txtGitHistory.Visible = lblGitBranch.Visible = lblGitBranchValue.Visible = true;
-                btnGitRefresh.PerformClick();
-
-                var branches = GetGitResponse("branch");
-
-                foreach (var line in branches)
+                if (Launcher.ProgramIsInstalled("Git"))
                 {
-                    if (line[0] == '*')
+                    btnGitChangeBranch.Visible = btnGitRefresh.Visible = txtGitHistory.Visible = lblGitBranch.Visible = lblGitBranchValue.Visible = true;
+                    btnGitRefresh.PerformClick();
+
+                    var branches = GetGitResponse("branch");
+
+                    foreach (var line in branches)
                     {
-                        lblGitBranchValue.Text = line.Substring(2);
-                        break;
+                        if (line[0] == '*')
+                        {
+                            lblGitBranchValue.Text = line.Substring(2);
+                            break;
+                        }
                     }
+                }
+                else
+                {
+                    MessageBox.Show("Git does not appear to be installed. Please install it and try again.");
+                    GitEnabled = false;
+                    UpdateUI();
                 }
             }
             else
@@ -166,32 +180,49 @@ namespace Manager
             #endregion
 
             #region Open With
-            if(SelectedProject.DefaultLauncher != null)
-            {
+            // VSCode and Visual Studio have their registry keys in different locations
+            // and formatted differently, so they get unique methods
+            btnAndroidStudio.Visible = Launcher.ProgramIsInstalled("Android Studio");
+            btnUnity.Visible = Launcher.ProgramIsInstalled("Unity");
+            btnVSCode.Visible = Launcher.VSCodeIsInstalled();
+            btnVSCommunity.Visible = Launcher.VisualStudioIsInstalled();
 
+            if (SelectedProject.DefaultLauncher != null)
+            {
                 if (SelectedProject.DefaultLauncher.Value == Launcher.None.Value)
                 {
                     btnAndroidStudio.Enabled = false;
                     btnVSCode.Enabled = false;
                     btnVSCommunity.Enabled = false;
+                    btnUnity.Enabled = false;
                 }
                 else if (SelectedProject.DefaultLauncher.Value == Launcher.AndroidStudio.Value)
                 {
                     btnAndroidStudio.Enabled = true;
                     btnVSCode.Enabled = false;
                     btnVSCommunity.Enabled = false;
+                    btnUnity.Enabled = false;
                 }
                 else if (SelectedProject.DefaultLauncher.Value == Launcher.VisualStudioCode.Value)
                 {
                     btnAndroidStudio.Enabled = false;
                     btnVSCode.Enabled = true;
                     btnVSCommunity.Enabled = false;
+                    btnUnity.Enabled = false;
                 }
                 else if (SelectedProject.DefaultLauncher.Value == Launcher.VisualStudioCommunity.Value)
                 {
                     btnAndroidStudio.Enabled = false;
                     btnVSCode.Enabled = false;
                     btnVSCommunity.Enabled = true;
+                    btnUnity.Enabled = false;
+                }
+                else if (SelectedProject.DefaultLauncher.Value == Launcher.Unity.Value)
+                {
+                    btnAndroidStudio.Enabled = false;
+                    btnVSCode.Enabled = false;
+                    btnVSCommunity.Enabled = false;
+                    btnUnity.Enabled = true;
                 }
             }
             else
@@ -200,6 +231,7 @@ namespace Manager
                 btnAndroidStudio.Enabled = false;
                 btnVSCode.Enabled = false;
                 btnVSCommunity.Enabled = false;
+                btnUnity.Enabled = false;
             }
             #endregion
         }
@@ -208,19 +240,42 @@ namespace Manager
         private void LoadLauncherConfig()
         {
             LoadDefaultLocations();
+            ValidateDefaultLocations();
 
             Settings.AndroidStudioExecutableLocation = Settings.AndroidStudioExecutableLocation == "" ? Properties.Settings.Default.AndroidStudioPath : Settings.AndroidStudioExecutableLocation;
             Settings.VSCodeExecutableLocation = Settings.VSCodeExecutableLocation == "" ? Properties.Settings.Default.VSCodePath : Settings.VSCodeExecutableLocation;
             Settings.VSCommunityExecutableLocation = Settings.VSCommunityExecutableLocation == "" ? Properties.Settings.Default.VisualStudioPath : Settings.VSCommunityExecutableLocation;
             Settings.UnityExecutableLocation = Settings.UnityExecutableLocation == "" ? Properties.Settings.Default.UnityPath : Settings.UnityExecutableLocation;
+
+            string output = "Please set the path to the following Editors before using them:\n\n";
+
+            output += Settings.AndroidStudioExecutableLocation == "" ? "Android Studio\n" : "";
+            output += Settings.VSCodeExecutableLocation == "" ? "Visual Studio Code\n" : "";
+            output += Settings.VSCommunityExecutableLocation == "" ? "Visual Studio Community\n" : "";
+            output += Settings.UnityExecutableLocation == "" ? "Unity\n" : "";
+
+            if(output != "Please set the path to the following Editors before using them:\n\n")
+            {
+                MessageBox.Show(output, "Default Paths Not Set", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
         }
 
         private void LoadDefaultLocations()
         {
             Properties.Settings.Default.AndroidStudioPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "Android\\Android Studio\\studio64.exe");
-            Properties.Settings.Default.VSCodePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Program\\Microsoft VS Code\\Code.exe");
+            Properties.Settings.Default.VSCodePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Programs\\Microsoft VS Code\\Code.exe");
             Properties.Settings.Default.VisualStudioPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), "Microsoft Visual Studio\\2019\\Community\\devenv.exe");
             Properties.Settings.Default.UnityPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "Unity\\Editor\\Unity.exe");
+
+            Properties.Settings.Default.Save();
+        }
+
+        private void ValidateDefaultLocations()
+        {
+            Properties.Settings.Default.AndroidStudioPath = File.Exists(Properties.Settings.Default.AndroidStudioPath) ? Properties.Settings.Default.AndroidStudioPath : "";
+            Properties.Settings.Default.VSCodePath = File.Exists(Properties.Settings.Default.VSCodePath) ? Properties.Settings.Default.VSCodePath : "";
+            Properties.Settings.Default.VisualStudioPath = File.Exists(Properties.Settings.Default.VisualStudioPath) ? Properties.Settings.Default.VisualStudioPath : "";
+            Properties.Settings.Default.UnityPath = File.Exists(Properties.Settings.Default.UnityPath) ? Properties.Settings.Default.UnityPath : "";
 
             Properties.Settings.Default.Save();
         }
@@ -239,7 +294,7 @@ namespace Manager
             }
             catch(NullReferenceException ex)
             {
-                MessageBox.Show(ex.Message);
+                MessageBox.Show(ex.ToString());
             }
         }
 
@@ -343,7 +398,7 @@ namespace Manager
                     MessageBox.Show("Failed to save settings. Please try again later.");
                 }
                 string errorLogPath = Path.Combine(baseFilePath, $"ErrorLog_{DateTime.Now:yyyyMMdd_HHmmss}.txt");
-                CreateErrorLog(errorLogPath, ex.Message);
+                CreateErrorLog(errorLogPath, ex.ToString());
             }
         }
 
@@ -365,7 +420,7 @@ namespace Manager
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Failed to save projects. Please try again later.\n\n" + ex.Message);
+                MessageBox.Show("Failed to save projects. Please try again later.\n\n" + ex.ToString());
             }
         }
 
@@ -385,7 +440,7 @@ namespace Manager
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Failed to save time log.\n\n" + ex.Message);
+                MessageBox.Show("Failed to save time log.\n\n" + ex.ToString());
             }
         }
 
@@ -612,18 +667,21 @@ namespace Manager
                 FileName = "explorer.exe"
             };
 
-            LaunchProject("Failed to open Project directory. Verify the folder at the bottom of the screen exists.", startInfo: psInfo);
+            LaunchProject(ErrorMessages.FaildLaunchFileEplorer, startInfo: psInfo);
         }
 
         private void BtnVSCode_Click(object sender, EventArgs e)
         {
+            var args = SelectedProject.RootDirectory;
+            var fileName = Settings.VSCodeExecutableLocation;
+
             ProcessStartInfo psInfo = new ProcessStartInfo()
             {
-                Arguments = SelectedProject.MainProjectFile,
-                FileName = Settings.VSCodeExecutableLocation
+                Arguments = args,
+                FileName = fileName
             };
 
-            LaunchProject("Failed to open Project in VSCode. Check the Error Log for more details.", startInfo: psInfo);
+            LaunchProject(ErrorMessages.FailedLaunchVSCode, startInfo: psInfo);
         }
 
         private void BtnVSCommunity_Click(object sender, EventArgs e)
@@ -634,7 +692,7 @@ namespace Manager
                 FileName = Settings.VSCommunityExecutableLocation
             };
 
-            LaunchProject("Failed to open Project in Visual Studio Community. Verify the installation path in Settings -> Launchers.", startInfo: psInfo);
+            LaunchProject(ErrorMessages.FaildLaunchVisualStudio, startInfo: psInfo);
         }
 
         private void BtnAndroidStudio_Click(object sender, EventArgs e)
@@ -644,7 +702,7 @@ namespace Manager
                 FileName = Settings.AndroidStudioExecutableLocation
             };
 
-            LaunchProject("Failed to open Project directory. Verify the folder at the bottom of the screen exists.", startInfo: psInfo);
+            LaunchProject(ErrorMessages.FaildLaunchAndroidStudio, startInfo: psInfo);
         }
         #endregion
 
@@ -681,8 +739,8 @@ namespace Manager
             catch (Exception ex)
             {
                 string errorLogPath = Path.Combine(baseFilePath, $"ErrorLog_{DateTime.Now:yyyyMMdd_HHmmss}.txt");
-                CreateErrorLog(errorLogPath, ex.Message);
-                MessageBox.Show(failMessage + "\n\nError Log: " + errorLogPath);
+                CreateErrorLog(errorLogPath, ex.ToString());
+                MessageBox.Show(failMessage + "\n\nError Log: " + errorLogPath, "Error launching project", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -703,23 +761,30 @@ namespace Manager
             startInfo.RedirectStandardInput = true;
             startInfo.RedirectStandardOutput = true;
             startInfo.Arguments = command;
-
-            Process process = new Process();
-            process.StartInfo = startInfo;
-            process.Start();
-
             List<string> output = new List<string>();
-            string lineVal = process.StandardOutput.ReadLine();
 
-            while (lineVal != null)
+            try
+            {
+                Process process = new Process();
+                process.StartInfo = startInfo;
+                process.Start();
+
+                string lineVal = process.StandardOutput.ReadLine();
+
+                while (lineVal != null)
+                {
+
+                    output.Add(lineVal);
+                    lineVal = process.StandardOutput.ReadLine();
+
+                }
+
+                process.WaitForExit();
+            }
+            catch (Exception ex)
             {
 
-                output.Add(lineVal);
-                lineVal = process.StandardOutput.ReadLine();
-
             }
-
-            process.WaitForExit();
 
             return output;
         }
@@ -752,6 +817,7 @@ namespace Manager
         }
     }
 
+    #region Custom EventArgs
     public class SelectedProjectChangedEventArgs : EventArgs
     {
         public Project Project { get; set; }
@@ -771,4 +837,5 @@ namespace Manager
             NewList = newList;
         }
     }
+    #endregion
 }
