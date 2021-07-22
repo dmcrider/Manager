@@ -644,7 +644,7 @@ namespace Manager
                 FileName = "explorer.exe"
             };
 
-            LaunchProject("Failed to open Project directory. Verify the folder at the bottom of the screen exists.", startInfo: psInfo);
+            LaunchProject(ErrorMessages.FaildLaunchFileEplorer, startInfo: psInfo);
         }
 
         private void BtnVSCode_Click(object sender, EventArgs e)
@@ -655,7 +655,7 @@ namespace Manager
                 FileName = Settings.VSCodeExecutableLocation
             };
 
-            LaunchProject("Failed to open Project in VSCode. Check the Error Log for more details.", startInfo: psInfo);
+            LaunchProject(ErrorMessages.FailedLaunchVSCode, startInfo: psInfo);
         }
 
         private void BtnVSCommunity_Click(object sender, EventArgs e)
@@ -666,7 +666,7 @@ namespace Manager
                 FileName = Settings.VSCommunityExecutableLocation
             };
 
-            LaunchProject("Failed to open Project in Visual Studio Community. Verify the installation path in Settings -> Launchers.", startInfo: psInfo);
+            LaunchProject(ErrorMessages.FaildLaunchVisualStudio, startInfo: psInfo);
         }
 
         private void BtnAndroidStudio_Click(object sender, EventArgs e)
@@ -676,7 +676,7 @@ namespace Manager
                 FileName = Settings.AndroidStudioExecutableLocation
             };
 
-            LaunchProject("Failed to open Project directory. Verify the folder at the bottom of the screen exists.", startInfo: psInfo);
+            LaunchProject(ErrorMessages.FaildLaunchAndroidStudio, startInfo: psInfo);
         }
         #endregion
 
@@ -714,7 +714,7 @@ namespace Manager
             {
                 string errorLogPath = Path.Combine(baseFilePath, $"ErrorLog_{DateTime.Now:yyyyMMdd_HHmmss}.txt");
                 CreateErrorLog(errorLogPath, ex.Message);
-                MessageBox.Show(failMessage + "\n\nError Log: " + errorLogPath);
+                MessageBox.Show(failMessage + "\n\nError Log: " + errorLogPath, "Error launching project", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
