@@ -13,6 +13,7 @@
     <SignAssembly>true</SignAssembly>
     <DelaySign>false</DelaySign>
     <AssemblyOriginatorKeyFile>ManagerSignKey.pfx</AssemblyOriginatorKeyFile>
+    <ApplicationIcon>manager.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>

@@ -29,6 +29,7 @@ namespace Manager
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormLaunchers));
             this.lblAndroid = new System.Windows.Forms.Label();
             this.lblVSCode = new System.Windows.Forms.Label();
             this.lblVSCommunity = new System.Windows.Forms.Label();
@@ -225,6 +226,7 @@ namespace Manager
             this.Controls.Add(this.lblVSCode);
             this.Controls.Add(this.lblAndroid);
             this.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "FormLaunchers";
             this.Text = "Program Launchers";
             this.Load += new System.EventHandler(this.FormLaunchers_Load);

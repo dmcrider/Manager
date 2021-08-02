@@ -29,6 +29,7 @@ namespace Manager
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormChangeGitBranch));
             this.lblCurrentBranch = new System.Windows.Forms.Label();
             this.lblNewBranch = new System.Windows.Forms.Label();
             this.txtCurrentBranch = new System.Windows.Forms.TextBox();
@@ -115,6 +116,7 @@ namespace Manager
             this.Controls.Add(this.lblNewBranch);
             this.Controls.Add(this.lblCurrentBranch);
             this.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "FormChangeGitBranch";
             this.Text = "Change Git Branch";
             this.Load += new System.EventHandler(this.FormChangeGitBranch_Load);

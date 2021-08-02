@@ -30,6 +30,7 @@ namespace Manager
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormSettings));
             this.grpGeneral = new System.Windows.Forms.GroupBox();
             this.btnAllProjects = new System.Windows.Forms.Button();
             this.txtMasterRoot = new System.Windows.Forms.TextBox();
@@ -375,6 +376,7 @@ namespace Manager
             this.Controls.Add(this.btnSave);
             this.Controls.Add(this.grpGeneral);
             this.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "FormSettings";
             this.Text = "Settings";
             this.Load += new System.EventHandler(this.FormSettings_Load);

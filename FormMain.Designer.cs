@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMain));
             this.menuStripMain = new System.Windows.Forms.MenuStrip();
             this.toolStripMenuItemFile = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItemExit = new System.Windows.Forms.ToolStripMenuItem();
@@ -55,6 +56,7 @@
             this.btnVSCommunity = new System.Windows.Forms.Button();
             this.btnAndroidStudio = new System.Windows.Forms.Button();
             this.btnFileExplorer = new System.Windows.Forms.Button();
+            this.btnUnity = new System.Windows.Forms.Button();
             this.grpTime = new System.Windows.Forms.GroupBox();
             this.btnStart = new System.Windows.Forms.Button();
             this.btnPause = new System.Windows.Forms.Button();
@@ -65,7 +67,6 @@
             this.lblTotal = new System.Windows.Forms.Label();
             this.grpOpenProject = new System.Windows.Forms.GroupBox();
             this.btnNotes = new System.Windows.Forms.Button();
-            this.btnUnity = new System.Windows.Forms.Button();
             this.menuStripMain.SuspendLayout();
             this.grpProjectDetails.SuspendLayout();
             this.grpTime.SuspendLayout();
@@ -310,6 +311,17 @@
             this.btnFileExplorer.UseVisualStyleBackColor = true;
             this.btnFileExplorer.Click += new System.EventHandler(this.BtnFileExplorer_Click);
             // 
+            // btnUnity
+            // 
+            this.btnUnity.BackgroundImage = global::Manager.Properties.Resources.unity_small;
+            this.btnUnity.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.btnUnity.Location = new System.Drawing.Point(260, 38);
+            this.btnUnity.Name = "btnUnity";
+            this.btnUnity.Size = new System.Drawing.Size(50, 50);
+            this.btnUnity.TabIndex = 4;
+            this.toolTip.SetToolTip(this.btnUnity, "Unity");
+            this.btnUnity.UseVisualStyleBackColor = true;
+            // 
             // grpTime
             // 
             this.grpTime.Controls.Add(this.btnStart);
@@ -420,17 +432,6 @@
             this.btnNotes.UseVisualStyleBackColor = true;
             this.btnNotes.Click += new System.EventHandler(this.BtnNotes_Click);
             // 
-            // btnUnity
-            // 
-            this.btnUnity.BackgroundImage = global::Manager.Properties.Resources.unity_small;
-            this.btnUnity.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.btnUnity.Location = new System.Drawing.Point(260, 38);
-            this.btnUnity.Name = "btnUnity";
-            this.btnUnity.Size = new System.Drawing.Size(50, 50);
-            this.btnUnity.TabIndex = 4;
-            this.toolTip.SetToolTip(this.btnUnity, "Unity");
-            this.btnUnity.UseVisualStyleBackColor = true;
-            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 21F);
@@ -448,6 +449,7 @@
             this.Controls.Add(this.listboxProjects);
             this.Controls.Add(this.menuStripMain);
             this.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStripMain;
             this.Name = "FormMain";
             this.Text = "Project Manager";

@@ -29,6 +29,7 @@ namespace Manager
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormExcludeProjects));
             this.listAllProjects = new System.Windows.Forms.ListBox();
             this.lblAllProjects = new System.Windows.Forms.Label();
             this.lblExclude = new System.Windows.Forms.Label();
@@ -129,6 +130,7 @@ namespace Manager
             this.Controls.Add(this.lblAllProjects);
             this.Controls.Add(this.listAllProjects);
             this.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "FormExcludeProjects";
             this.Text = "Exclude Projects";
             this.Load += new System.EventHandler(this.FormExcludeProjects_Load);
