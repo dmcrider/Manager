@@ -19,6 +19,8 @@ namespace Manager
         public bool EnableTimekeeping { get; set; }
         public int GitLogHistory { get; set; }
 
+        private string baseNotesPath = Path.Combine(FormMain.baseFilePath, "Notes");
+
         public Project() { }
 
         public Project(string name, string rootDirectory, string mainFile, string gitCurrentBranch, Launcher defaultLauncher, bool useGit, bool time, int logHistory)
@@ -33,6 +35,19 @@ namespace Manager
             GitLogHistory = logHistory;
         }
 
+        public void CreateDirectoriesIfNeeded()
+        {
+            if (!Directory.Exists(TimeLog.basePath))
+            {
+                Directory.CreateDirectory(TimeLog.basePath);
+            }
+
+            if (!Directory.Exists(baseNotesPath))
+            {
+                Directory.CreateDirectory(baseNotesPath);
+            }
+        }
+
         public override string ToString()
         {
             return $"{Name}: {RootDirectory}";
@@ -40,7 +55,7 @@ namespace Manager
 
         public override int GetHashCode()
         {
-            return RootDirectory.GetHashCode();
+            return RootDirectory == null ? 0 : RootDirectory.GetHashCode();
         }
 
         public override bool Equals(object obj)
@@ -63,19 +78,11 @@ namespace Manager
             return this.RootDirectory == p.RootDirectory;
         }
 
-        public string TimeLogPath
+        public string TimeLogFileName
         {
             get
             {
-                return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), $"TimeLogs\\{this.Name.ToLower().Trim().Replace(" ", "")}_timelog.json");
-            }
-        }
-
-        public string NotesDirectory
-        {
-            get
-            {
-                return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Notes");
+                return $"{this.Name.ToLower().Trim().Replace(" ", "")}_timelog.json";
             }
         }
 
@@ -83,7 +90,7 @@ namespace Manager
         {
             get
             {
-                return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), $"Notes\\{this.Name.ToLower().Trim().Replace(" ", "")}_notes.json");
+                return Path.Combine(baseNotesPath, $"{this.Name.ToLower().Trim().Replace(" ", "")}_notes.json");
             }
         }
     }

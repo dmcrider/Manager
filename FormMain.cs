@@ -41,14 +41,15 @@ namespace Manager
         private void FormMain_SelectedProjectChanged(object sender, SelectedProjectChangedEventArgs e)
         {
             // Update the displayed info
-            if (e.Project == null) { return; }
+            if (e.Project == null || e.Project.Name == "No Projects Found") { return; }
             SelectedProject = e.Project;
             lblProjectName.Text = e.Project.Name;
             lblProjectLocation.Text = e.Project.RootDirectory;
             lblLastUpdatedValue.Text = GetLastUpdatedTime(e.Project.RootDirectory);
             GitEnabled = e.Project.EnableGitLog;
             isTimerPaused = false;
-            btnNotes.Tag = new string[] { e.Project.NotesPath, e.Project.NotesDirectory };
+            btnNotes.Tag = e.Project.NotesPath;
+            e.Project.CreateDirectoriesIfNeeded();
             UpdateUI();
         }
 
@@ -68,7 +69,7 @@ namespace Manager
         private bool GitEnabled;
         private bool isTimerPaused;
         private Stopwatch projectStopwatch;
-        private string baseFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),"Project Manager");
+        public static string baseFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),"Crider Technologies/Manager");
 
         public FormMain()
         {
@@ -104,6 +105,8 @@ namespace Manager
         #region Save & Load
         private void UpdateUI()
         {
+            if(SelectedProject == null) { return; }
+
             #region Git History
             if (GitEnabled)
             {
@@ -137,27 +140,20 @@ namespace Manager
             #endregion
 
             #region Time log
-            if (SelectedProject != null && SelectedProject.EnableTimekeeping)
+            if (SelectedProject.EnableTimekeeping)
             {
-                grpTime.Enabled = true;
-                var configFile = SelectedProject.TimeLogPath;
-                if (File.Exists(configFile))
+                grpTime.Visible = true;
+                var configFile = SelectedProject.TimeLogFileName;
+                if (File.Exists(Path.Combine(TimeLog.basePath, configFile)))
                 {
-                    using StreamReader r2 = File.OpenText(configFile);
-                    string json2 = r2.ReadToEnd();
-                    CurrentTimeLog = JsonConvert.DeserializeObject<TimeLog>(json2);
-
-                    if(CurrentTimeLog != null)
-                    {
-                        LastTimeLog = CurrentTimeLog.LastSession;
-                        txtTotalTime.Text = GetTotalProjectTime(CurrentTimeLog);
-                    }
-
-                    r2.Dispose();
+                    TimeLog.LoadLogs(configFile);
+                    LastTimeLog = TimeLog.GetLastLog();
+                    txtTotalTime.Text = TimeLog.GetFormattedTotalProjectTime();
                 }
                 else
                 {
                     File.Create(configFile).Dispose();
+                    TimeLog.InitializeEmptyLogList();
                 }
             }
             else
@@ -352,8 +348,9 @@ namespace Manager
 
         private void ResetLoadedProjects()
         {
-            if(ProjectList.Count == 0)
+            if(ProjectList == null || ProjectList.Count == 0)
             {
+                ProjectList = new BindingList<Project>();
                 ProjectList.Add(new Project()
                 {
                     Name = "No Projects Found",
@@ -422,40 +419,6 @@ namespace Manager
             {
                 MessageBox.Show("Failed to save projects. Please try again later.\n\n" + ex.ToString());
             }
-        }
-
-        private void UpdateTimeLogFile()
-        {
-            try
-            {
-                var configFile = SelectedProject.TimeLogPath;
-
-                if (!File.Exists(configFile))
-                {
-                    File.Create(configFile).Dispose();
-                }
-
-                string jsonOut = Newtonsoft.Json.JsonConvert.SerializeObject(CurrentTimeLog);
-                File.WriteAllText(configFile, jsonOut);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Failed to save time log.\n\n" + ex.ToString());
-            }
-        }
-
-        private string GetTotalProjectTime(TimeLog log)
-        {
-            int totalSeconds = 0;
-            do
-            {
-                if (log.StartTime == DateTime.Parse("0001-01-01") || log.EndTime == DateTime.Parse("0001-01-01")) { break; }
-                totalSeconds += TimeLog.TimeInSeconds(log.StartTime, log.EndTime);
-                log = log.LastSession;
-            }
-            while (log != null);
-
-            return TimeLog.FormattedTime(totalSeconds);
         }
 
         public BindingList<Project> AddProjects(string path)
@@ -617,10 +580,10 @@ namespace Manager
                 CurrentTimeLog = new TimeLog()
                 {
                     StartTime = DateTime.Now,
-                    LastSession = LastTimeLog
+                    LastSessionId = LastTimeLog == null ? -1 : LastTimeLog.SessionId
                 };
 
-                txtCurrentStart.Text = string.Format(Settings.GetDateTimeFormat(), CurrentTimeLog.StartTime);
+                txtCurrentStart.Text = CurrentTimeLog.StartTime.ToString(Settings.GetDateTimeFormat());
             }
 
             projectStopwatch.Start();
@@ -644,16 +607,19 @@ namespace Manager
         {
             isTimerPaused = false;
             projectStopwatch.Stop();
-            CurrentTimeLog.ElapsedTime += projectStopwatch.Elapsed;
 
-            CurrentTimeLog.EndTime = CurrentTimeLog.StartTime.Add(CurrentTimeLog.ElapsedTime);
+            CurrentTimeLog.EndTime = DateTime.Now;
+            CurrentTimeLog.ElapsedTime = CurrentTimeLog.EndTime.Subtract(CurrentTimeLog.StartTime);
             LastTimeLog = CurrentTimeLog;
 
             btnPause.Enabled = false;
             btnStop.Enabled = false;
             btnStart.Enabled = true;
 
-            UpdateTimeLogFile();
+            TimeLog.Update(SelectedProject.TimeLogFileName, LastTimeLog);
+
+            txtTotalTime.Text = TimeLog.GetFormattedTotalProjectTime();
+            txtCurrentStart.Text = string.Empty;
         }
 
         #endregion
@@ -783,7 +749,7 @@ namespace Manager
             }
             catch (Exception ex)
             {
-
+                MessageBox.Show(ex.ToString());
             }
 
             return output;
