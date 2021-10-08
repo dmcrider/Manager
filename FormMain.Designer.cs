@@ -453,6 +453,7 @@
             this.MainMenuStrip = this.menuStripMain;
             this.Name = "FormMain";
             this.Text = "Project Manager";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormMain_FormClosing);
             this.Load += new System.EventHandler(this.FormMain_Load);
             this.menuStripMain.ResumeLayout(false);
             this.menuStripMain.PerformLayout();

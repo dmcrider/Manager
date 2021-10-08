@@ -6,7 +6,7 @@
     <UseWindowsForms>true</UseWindowsForms>
     <PackageId>com.dayloncrider.manager</PackageId>
     <Authors>Daylon Crider</Authors>
-    <Description>A tool to help manage your side projects.</Description>
+    <Description>A tool to help manage your projects.</Description>
     <Copyright>2021</Copyright>
     <PackageProjectUrl>https://dayloncrider.com/projects/manager</PackageProjectUrl>
     <RepositoryUrl>https://github.com/dmcrider/Manager</RepositoryUrl>
@@ -14,6 +14,9 @@
     <DelaySign>false</DelaySign>
     <AssemblyOriginatorKeyFile>ManagerSignKey.pfx</AssemblyOriginatorKeyFile>
     <ApplicationIcon>manager.ico</ApplicationIcon>
+    <StartupObject>Manager.Program</StartupObject>
+    <AssemblyVersion>1.2.0.0</AssemblyVersion>
+    <FileVersion>1.2.0.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -22,6 +25,7 @@
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="Octokit" Version="0.50.0" />
   </ItemGroup>
 
   <ItemGroup>

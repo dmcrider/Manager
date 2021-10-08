@@ -70,6 +70,7 @@ namespace Manager
         private bool isTimerPaused;
         private Stopwatch projectStopwatch;
         public static string baseFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),"Crider Technologies/Manager");
+        public static string versionFilePath = System.IO.Path.Join(FormMain.baseFilePath, "vd.txt");
 
         public FormMain()
         {
@@ -508,12 +509,12 @@ namespace Manager
 
         private void ToolStripMenuItemUpdates_Click(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            new FormVersionCheck().ShowDialog();
         }
 
         private void ToolStripMenuItemVersion_Click(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            new FormVersionDetails().ShowDialog();
         }
 
         private void ToolStripMenuItemConfigure_Click(object sender, EventArgs e)
@@ -533,7 +534,7 @@ namespace Manager
 
         private void ToolStripMenuItemExit_Click(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            System.Windows.Forms.Application.Exit();
         }
         #endregion
 
@@ -780,6 +781,13 @@ namespace Manager
         private void CreateErrorLog(string fullPath, string content)
         {
             File.WriteAllText(fullPath, content);
+        }
+
+        private void FormMain_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            // Remove this each time we close the form
+            // so we can always get the latest version
+            File.Delete(FormMain.versionFilePath);
         }
     }
 
