@@ -1,10 +1,12 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -19,14 +21,14 @@ namespace Manager
             CenterToParent();
         }
 
-        private void FormVersionDetails_Load(object sender, EventArgs e)
+        private async void FormVersionDetails_Load(object sender, EventArgs e)
         {
             // If there's no existing version details
             // download the file
             if (System.IO.File.Exists(FormMain.versionFilePath) == false)
             {
-                var client = new WebClient();
-                client.DownloadFile(@"https://dayloncrider.com/assets/downloads/ProjectManagerVersionDetails.txt", FormMain.versionFilePath);
+                var responseFile = await new HttpClient().GetStringAsync(@"https://dayloncrider.com/assets/downloads/ProjectManagerVersionDetails.txt");
+                File.WriteAllText(FormMain.versionFilePath, responseFile);
             }
 
             var lines = System.IO.File.ReadAllLines(FormMain.versionFilePath);
