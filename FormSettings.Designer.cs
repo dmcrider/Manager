@@ -46,7 +46,6 @@ namespace Manager
             this.btnSave = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
             this.listProjects = new System.Windows.Forms.ListBox();
-            this.btnAdd = new System.Windows.Forms.Button();
             this.lblProjName = new System.Windows.Forms.Label();
             this.lblProjLoc = new System.Windows.Forms.Label();
             this.txtProjectName = new System.Windows.Forms.TextBox();
@@ -212,20 +211,10 @@ namespace Manager
             // 
             this.listProjects.FormattingEnabled = true;
             this.listProjects.ItemHeight = 21;
-            this.listProjects.Location = new System.Drawing.Point(507, 206);
+            this.listProjects.Location = new System.Drawing.Point(507, 164);
             this.listProjects.Name = "listProjects";
-            this.listProjects.Size = new System.Drawing.Size(432, 277);
+            this.listProjects.Size = new System.Drawing.Size(432, 319);
             this.listProjects.TabIndex = 3;
-            // 
-            // btnAdd
-            // 
-            this.btnAdd.Location = new System.Drawing.Point(844, 170);
-            this.btnAdd.Name = "btnAdd";
-            this.btnAdd.Size = new System.Drawing.Size(95, 30);
-            this.btnAdd.TabIndex = 5;
-            this.btnAdd.Text = "Add Project";
-            this.btnAdd.UseVisualStyleBackColor = true;
-            this.btnAdd.Click += new System.EventHandler(this.BtnAdd_Click);
             // 
             // lblProjName
             // 
@@ -370,7 +359,6 @@ namespace Manager
             this.Controls.Add(this.txtProjectName);
             this.Controls.Add(this.lblProjLoc);
             this.Controls.Add(this.lblProjName);
-            this.Controls.Add(this.btnAdd);
             this.Controls.Add(this.listProjects);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnSave);
@@ -400,7 +388,6 @@ namespace Manager
         private System.Windows.Forms.Button btnSave;
         private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.ListBox listProjects;
-        private System.Windows.Forms.Button btnAdd;
         private System.Windows.Forms.Label lblProjName;
         private System.Windows.Forms.Label lblProjLoc;
         private System.Windows.Forms.TextBox txtProjectName;

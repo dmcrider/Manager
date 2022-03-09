@@ -448,6 +448,12 @@ namespace Manager
             return retVal;
         }
 
+        public void AddProject(Project proj)
+        {
+            ProjectList.Add(proj);
+            SaveProjectList();
+        }
+
         public BindingList<Project> GetProjectsInDirectory(string path)
         {
             BindingList<Project> retVal = new BindingList<Project>();
@@ -475,7 +481,8 @@ namespace Manager
             toolStripMenuItemConfigure.Click += ToolStripMenuItemConfigure_Click;
             toolStripMenuItemVersion.Click += ToolStripMenuItemVersion_Click;
             toolStripMenuItemUpdates.Click += ToolStripMenuItemUpdates_Click;
-            toolStripMenuItemExclude.Click += ToolStripMenuItemExclude_Click;
+            toolStripMenuItemRemoveProjects.Click += ToolStripMenuItemExclude_Click;
+            toolStripMenuItemAddProject.Click += ToolStripMenuItemAddProject_Click;
             toolStripMenuItemLaunchers.Click += ToolStripMenuItemLaunchers_Click;
         }
 
@@ -505,6 +512,11 @@ namespace Manager
                 SaveProjectList();
                 SaveGlobalSettings();
             }
+        }
+
+        private void ToolStripMenuItemAddProject_Click(object sender, EventArgs e)
+        {
+            new FormAddProject(this).Show();
         }
 
         private void ToolStripMenuItemUpdates_Click(object sender, EventArgs e)

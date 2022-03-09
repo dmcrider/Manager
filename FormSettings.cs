@@ -161,23 +161,6 @@ namespace Manager
 
         }
 
-        private void BtnAdd_Click(object sender, EventArgs e)
-        {
-            Project newProj = new Project()
-            {
-                Name = txtProjectName.Text,
-                RootDirectory = txtProjectLocation.Text,
-                EnableGitLog = checkEnableGit.Checked,
-                GitLogHistory = (int)txtGitLogHistory.Value,
-                MainProjectFile = txtMainProjFile.Text,
-                EnableTimekeeping = chkEnableTimekeeping.Checked,
-                DefaultLauncher = (Launcher)listOpenWith.SelectedItem
-            };
-
-            ProjectList.Add(newProj);
-            LoadProjects(newProj);
-        }
-
         private void BtnSaveClose_Click(object sender, EventArgs e)
         {
             btnSave.PerformClick();
