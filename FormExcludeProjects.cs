@@ -25,6 +25,8 @@ namespace Manager
         {
             InitializeComponent();
             CenterToParent();
+            allowedProjects = new BindingList<Project>();
+            excludedProjects = new BindingList<Project>();
         }
 
         private void FormExcludeProjects_Load(object sender, EventArgs e)
@@ -32,11 +34,18 @@ namespace Manager
             if(Settings == null) { this.Close(); }
 
             allowedProjects = _Parent.GetProjectsInDirectory(Settings.MasterRootPath);
-            excludedProjects = new BindingList<Project>(Settings.ExcludedProjects);
-            excludedProjects.Add(new Project()
+
+            if (Settings.ExcludedProjects.Any())
             {
-                Name = noExcludedProjects
-            });
+                excludedProjects = new BindingList<Project>(Settings.ExcludedProjects);
+            }
+            else
+            {
+                excludedProjects.Add(new Project()
+                {
+                    Name = noExcludedProjects
+                });
+            }
 
             RefreshLists();
         }

@@ -21,6 +21,8 @@ namespace Manager
         public TimeLog LastTimeLog;
         public UserSettings Settings;
 
+        private Profile CurrentProfile;
+
         #region Event Handlers
         public event EventHandler<SelectedProjectChangedEventArgs> SelectedProjectChanged;
         protected virtual void OnSelectedProjectChanged(SelectedProjectChangedEventArgs e)
@@ -285,9 +287,11 @@ namespace Manager
                 LoadGlobalSettings();
 
                 // Individual Projects
-                ProjectList = LoadProjects();
+                var p = Profile.LoadProfile(Settings.LastUsedProfile);
+                ProfileChaged(p);
 
-                ResetLoadedProjects();
+                // Add Profiles to dropdown
+                AddProfilesToMenuStrip(Settings.Profiles);
             }
             catch(NullReferenceException ex)
             {
@@ -295,10 +299,10 @@ namespace Manager
             }
         }
 
-        private BindingList<Project> LoadProjects()
+        private BindingList<Project> LoadProjectsForProfile(Profile profile)
         {
             BindingList<Project> retval = new BindingList<Project>();
-            var configFile = Path.Combine(baseFilePath, "projects.json");
+            var configFile = Path.Combine(profile.GetDirectory(), "projects.json");
             if (File.Exists(configFile))
             {
                 retval = JsonConvert.DeserializeObject<BindingList<Project>>(File.ReadAllText(configFile));
@@ -314,7 +318,7 @@ namespace Manager
             {
                 var projectsInRoot = AddProjects(Settings.MasterRootPath);
 
-                foreach(Project p in projectsInRoot)
+                foreach (Project p in projectsInRoot)
                 {
                     if (ProjectList.Contains(p)) { continue; }
                     retval.Add(p);
@@ -326,7 +330,7 @@ namespace Manager
 
         private void LoadGlobalSettings()
         {
-            var configFile = Path.Join(baseFilePath, "settings.json");
+            var configFile = Path.Join(baseFilePath, UserSettings.FileName);
             if (File.Exists(configFile))
             {
                 using (StreamReader r2 = new StreamReader(File.OpenRead(configFile)))
@@ -343,6 +347,21 @@ namespace Manager
             else
             {
                 Settings = new UserSettings();
+            }
+        }
+
+        private void AddProfilesToMenuStrip(List<string> profiles)
+        {
+            foreach(var profile in profiles)
+            {
+                var toolStripItem = new ToolStripMenuItem()
+                {
+                    Text = profile,
+                    Tag = profile
+                };
+                toolStripItem.Click += ToolStripMenuItemChangeProfile_Click;
+
+                profilesToolStripMenuItem.DropDownItems.Add(toolStripItem);
             }
         }
         #endregion
@@ -379,7 +398,7 @@ namespace Manager
         {
             try
             {
-                var configFile = Path.Combine(baseFilePath, "settings.json");
+                var configFile = Path.Combine(baseFilePath, UserSettings.FileName);
 
                 if (!File.Exists(configFile))
                 {
@@ -400,11 +419,11 @@ namespace Manager
             }
         }
 
-        private void SaveProjectList()
+        private void SaveProjectList(Profile profile)
         {
             try
             {
-                var configFile = Path.Combine(baseFilePath, "projects.json");
+                var configFile = Path.Combine(profile.GetDirectory(), Project.FileName);
 
                 if (!File.Exists(configFile))
                 {
@@ -448,6 +467,12 @@ namespace Manager
             return retVal;
         }
 
+        public void AddProject(Project proj)
+        {
+            ProjectList.Add(proj);
+            SaveProjectList(CurrentProfile);
+        }
+
         public BindingList<Project> GetProjectsInDirectory(string path)
         {
             BindingList<Project> retVal = new BindingList<Project>();
@@ -475,8 +500,10 @@ namespace Manager
             toolStripMenuItemConfigure.Click += ToolStripMenuItemConfigure_Click;
             toolStripMenuItemVersion.Click += ToolStripMenuItemVersion_Click;
             toolStripMenuItemUpdates.Click += ToolStripMenuItemUpdates_Click;
-            toolStripMenuItemExclude.Click += ToolStripMenuItemExclude_Click;
+            toolStripMenuItemRemoveProjects.Click += ToolStripMenuItemExclude_Click;
+            toolStripMenuItemAddProject.Click += ToolStripMenuItemAddProject_Click;
             toolStripMenuItemLaunchers.Click += ToolStripMenuItemLaunchers_Click;
+            toolStripMenuItemProfilesAdd.Click += ToolStripMenuItemProfilesAdd_Click;
         }
 
         private void ToolStripMenuItemLaunchers_Click(object sender, EventArgs e)
@@ -502,9 +529,14 @@ namespace Manager
             if(formExclude.DialogResult == DialogResult.OK)
             {
                 OnProjectListChanged(new ProjectListChangedEventArgs(formExclude.GetNewProjectList()));
-                SaveProjectList();
+                SaveProjectList(CurrentProfile);
                 SaveGlobalSettings();
             }
+        }
+
+        private void ToolStripMenuItemAddProject_Click(object sender, EventArgs e)
+        {
+            new FormAddProject(this).ShowDialog();
         }
 
         private void ToolStripMenuItemUpdates_Click(object sender, EventArgs e)
@@ -526,7 +558,7 @@ namespace Manager
             {
                 OnProjectListChanged(new ProjectListChangedEventArgs(formSettings.ProjectList));
                 OnSelectedProjectChanged(new SelectedProjectChangedEventArgs(SelectedProject));
-                SaveProjectList();
+                SaveProjectList(CurrentProfile);
                 SaveGlobalSettings();
             }
 
@@ -535,6 +567,31 @@ namespace Manager
         private void ToolStripMenuItemExit_Click(object sender, EventArgs e)
         {
             System.Windows.Forms.Application.Exit();
+        }
+
+        private void ToolStripMenuItemProfilesAdd_Click(object sender, EventArgs e)
+        {
+            var form = new FormNewProfile();
+            var result = form.ShowDialog();
+
+            if(result == DialogResult.OK)
+            {
+                AddProfilesToMenuStrip(new List<string>() { form.NewProfileName });
+                Settings.Profiles.Add(form.NewProfileName);
+                var p = new Profile(form.NewProfileName);
+                ProfileChaged(p);
+            }
+        }
+
+        private void ToolStripMenuItemChangeProfile_Click(object sender, EventArgs e)
+        {
+            var selectedProfile = (string)((ToolStripMenuItem)sender).ToString();
+
+            if(Directory.Exists(Path.Combine(baseFilePath, selectedProfile)))
+            {
+                var p = Profile.LoadProfile(selectedProfile);
+                ProfileChaged(p);
+            }
         }
         #endregion
 
@@ -683,6 +740,15 @@ namespace Manager
         #endregion
         #endregion
 
+        private void ProfileChaged(Profile newProfile)
+        {
+            CurrentProfile = newProfile;
+            Settings.LastUsedProfile = CurrentProfile.ProfileName;
+            lblProfileName.Text = CurrentProfile.ProfileName;
+            ProjectList = LoadProjectsForProfile(CurrentProfile);
+            ResetLoadedProjects();
+        }
+
         private void LaunchProject(string failMessage, string fileName = "", ProcessStartInfo startInfo = null)
         {
             try
@@ -724,7 +790,8 @@ namespace Manager
 
             startInfo.UseShellExecute = false;
             startInfo.WorkingDirectory = SelectedProject.RootDirectory;
-            startInfo.WindowStyle = ProcessWindowStyle.Minimized;
+            startInfo.WindowStyle = ProcessWindowStyle.Hidden;
+            startInfo.CreateNoWindow = true; // This prevents the console window from flashing every time it gets used
             startInfo.RedirectStandardInput = true;
             startInfo.RedirectStandardOutput = true;
             startInfo.Arguments = command;
@@ -766,7 +833,7 @@ namespace Manager
             }
             else
             {
-                if(File.Exists(Path.Combine(baseFilePath, "settings.json")))
+                if(File.Exists(Path.Combine(baseFilePath, UserSettings.FileName)))
                 {
                     return;
                 }
@@ -788,6 +855,9 @@ namespace Manager
             // Remove this each time we close the form
             // so we can always get the latest version
             File.Delete(FormMain.versionFilePath);
+
+            // Save the last used profile
+            SaveGlobalSettings(false);
         }
     }
 

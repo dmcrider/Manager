@@ -51,6 +51,8 @@ namespace Manager
 
         private void UpdateUI()
         {
+            if(selectedProject == null) { return; }
+
             txtProjectName.Text = selectedProject.Name;
             txtProjectLocation.Text = selectedProject.RootDirectory;
             txtMainProjFile.Text = selectedProject.MainProjectFile;
@@ -68,7 +70,7 @@ namespace Manager
             listProjects.DataSource = bindingSourceProjects;
             listProjects.DisplayMember = "Name";
 
-            if(selectedProj == null)
+            if(selectedProj == null && selectedProject != null)
             {
                 foreach (Project p in listProjects.Items)
                 {
@@ -79,7 +81,14 @@ namespace Manager
                 }
             }
 
-            listProjects.SelectedItem = selectedProj;
+            if(selectedProj == null)
+            {
+                listProjects.SelectedIndex = 0;
+            }
+            else
+            {
+                listProjects.SelectedItem = selectedProj;
+            }
             UpdateUI();
         }
 
@@ -159,23 +168,6 @@ namespace Manager
         private void BtnGitHub_Click(object sender, EventArgs e)
         {
 
-        }
-
-        private void BtnAdd_Click(object sender, EventArgs e)
-        {
-            Project newProj = new Project()
-            {
-                Name = txtProjectName.Text,
-                RootDirectory = txtProjectLocation.Text,
-                EnableGitLog = checkEnableGit.Checked,
-                GitLogHistory = (int)txtGitLogHistory.Value,
-                MainProjectFile = txtMainProjFile.Text,
-                EnableTimekeeping = chkEnableTimekeeping.Checked,
-                DefaultLauncher = (Launcher)listOpenWith.SelectedItem
-            };
-
-            ProjectList.Add(newProj);
-            LoadProjects(newProj);
         }
 
         private void BtnSaveClose_Click(object sender, EventArgs e)
@@ -266,7 +258,7 @@ namespace Manager
         {
             foreach (Launcher l in listOpenWith.Items)
             {
-                if (l.Value == selectedProject.DefaultLauncher.Value)
+                if (selectedProject.DefaultLauncher != null && l.Value == selectedProject.DefaultLauncher.Value)
                 {
                     listOpenWith.SelectedItem = l;
                 }

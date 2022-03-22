@@ -10,6 +10,8 @@ namespace Manager
     [Serializable]
     public class Project
     {
+        public static string FileName = "projects.json";
+
         public string Name { get; set; }
         public string RootDirectory { get; set; }
         public string MainProjectFile { get; set; }
