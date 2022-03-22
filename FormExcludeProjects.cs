@@ -25,6 +25,8 @@ namespace Manager
         {
             InitializeComponent();
             CenterToParent();
+            allowedProjects = new BindingList<Project>();
+            excludedProjects = new BindingList<Project>();
         }
 
         private void FormExcludeProjects_Load(object sender, EventArgs e)

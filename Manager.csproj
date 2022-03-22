@@ -14,9 +14,10 @@
     <AssemblyOriginatorKeyFile>ManagerSignKey.pfx</AssemblyOriginatorKeyFile>
     <ApplicationIcon>manager.ico</ApplicationIcon>
     <StartupObject>Manager.Program</StartupObject>
-    <AssemblyVersion>1.3.0.0</AssemblyVersion>
-    <FileVersion>1.3.0.0</FileVersion>
+    <AssemblyVersion>1.4.*</AssemblyVersion>
+    <FileVersion></FileVersion>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <Deterministic>false</Deterministic>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="FormSettings.cs~RF42a58bd.TMP" />

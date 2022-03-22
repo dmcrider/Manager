@@ -36,18 +36,19 @@
             this.btnBrowse = new System.Windows.Forms.Button();
             this.txtProjectName = new System.Windows.Forms.TextBox();
             this.grpDefaultLauncher = new System.Windows.Forms.GroupBox();
-            this.radioVisualStudio = new System.Windows.Forms.RadioButton();
-            this.radioVSCode = new System.Windows.Forms.RadioButton();
-            this.radioAndroid = new System.Windows.Forms.RadioButton();
-            this.radioFileExplorer = new System.Windows.Forms.RadioButton();
             this.lblLauncherNote = new System.Windows.Forms.Label();
+            this.radioFileExplorer = new System.Windows.Forms.RadioButton();
+            this.radioAndroid = new System.Windows.Forms.RadioButton();
+            this.radioVSCode = new System.Windows.Forms.RadioButton();
+            this.radioVisualStudio = new System.Windows.Forms.RadioButton();
             this.grpGit = new System.Windows.Forms.GroupBox();
-            this.checkEnableGit = new System.Windows.Forms.CheckBox();
-            this.label1 = new System.Windows.Forms.Label();
             this.numberGitCommits = new System.Windows.Forms.NumericUpDown();
+            this.label1 = new System.Windows.Forms.Label();
+            this.checkEnableGit = new System.Windows.Forms.CheckBox();
             this.checkEnableTimekeeping = new System.Windows.Forms.CheckBox();
             this.btnCancel = new System.Windows.Forms.Button();
             this.btnSave = new System.Windows.Forms.Button();
+            this.btnSaveAnother = new System.Windows.Forms.Button();
             this.grpDefaultLauncher.SuspendLayout();
             this.grpGit.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numberGitCommits)).BeginInit();
@@ -115,41 +116,14 @@
             this.grpDefaultLauncher.TabStop = false;
             this.grpDefaultLauncher.Text = "Default Launcher";
             // 
-            // radioVisualStudio
+            // lblLauncherNote
             // 
-            this.radioVisualStudio.AutoSize = true;
-            this.radioVisualStudio.Location = new System.Drawing.Point(29, 40);
-            this.radioVisualStudio.Name = "radioVisualStudio";
-            this.radioVisualStudio.Size = new System.Drawing.Size(118, 25);
-            this.radioVisualStudio.TabIndex = 0;
-            this.radioVisualStudio.TabStop = true;
-            this.radioVisualStudio.Tag = "vs";
-            this.radioVisualStudio.Text = "Visual Studio";
-            this.radioVisualStudio.UseVisualStyleBackColor = true;
-            // 
-            // radioVSCode
-            // 
-            this.radioVSCode.AutoSize = true;
-            this.radioVSCode.Location = new System.Drawing.Point(182, 40);
-            this.radioVSCode.Name = "radioVSCode";
-            this.radioVSCode.Size = new System.Drawing.Size(158, 25);
-            this.radioVSCode.TabIndex = 1;
-            this.radioVSCode.TabStop = true;
-            this.radioVSCode.Tag = "vsc";
-            this.radioVSCode.Text = "Visual Studio Code";
-            this.radioVSCode.UseVisualStyleBackColor = true;
-            // 
-            // radioAndroid
-            // 
-            this.radioAndroid.AutoSize = true;
-            this.radioAndroid.Location = new System.Drawing.Point(33, 88);
-            this.radioAndroid.Name = "radioAndroid";
-            this.radioAndroid.Size = new System.Drawing.Size(132, 25);
-            this.radioAndroid.TabIndex = 2;
-            this.radioAndroid.TabStop = true;
-            this.radioAndroid.Tag = "android";
-            this.radioAndroid.Text = "Android Studio";
-            this.radioAndroid.UseVisualStyleBackColor = true;
+            this.lblLauncherNote.Location = new System.Drawing.Point(6, 128);
+            this.lblLauncherNote.Name = "lblLauncherNote";
+            this.lblLauncherNote.Size = new System.Drawing.Size(334, 75);
+            this.lblLauncherNote.TabIndex = 4;
+            this.lblLauncherNote.Text = "Please note that each launcher must be installed separately and configured in Set" +
+    "tings before launching will work properly.";
             // 
             // radioFileExplorer
             // 
@@ -163,14 +137,41 @@
             this.radioFileExplorer.Text = "File Explorer";
             this.radioFileExplorer.UseVisualStyleBackColor = true;
             // 
-            // lblLauncherNote
+            // radioAndroid
             // 
-            this.lblLauncherNote.Location = new System.Drawing.Point(6, 128);
-            this.lblLauncherNote.Name = "lblLauncherNote";
-            this.lblLauncherNote.Size = new System.Drawing.Size(334, 75);
-            this.lblLauncherNote.TabIndex = 4;
-            this.lblLauncherNote.Text = "Please note that each launcher must be installed separately and configured in Set" +
-    "tings before launching will work properly.";
+            this.radioAndroid.AutoSize = true;
+            this.radioAndroid.Location = new System.Drawing.Point(33, 88);
+            this.radioAndroid.Name = "radioAndroid";
+            this.radioAndroid.Size = new System.Drawing.Size(132, 25);
+            this.radioAndroid.TabIndex = 2;
+            this.radioAndroid.TabStop = true;
+            this.radioAndroid.Tag = "android";
+            this.radioAndroid.Text = "Android Studio";
+            this.radioAndroid.UseVisualStyleBackColor = true;
+            // 
+            // radioVSCode
+            // 
+            this.radioVSCode.AutoSize = true;
+            this.radioVSCode.Location = new System.Drawing.Point(182, 40);
+            this.radioVSCode.Name = "radioVSCode";
+            this.radioVSCode.Size = new System.Drawing.Size(158, 25);
+            this.radioVSCode.TabIndex = 1;
+            this.radioVSCode.TabStop = true;
+            this.radioVSCode.Tag = "vsc";
+            this.radioVSCode.Text = "Visual Studio Code";
+            this.radioVSCode.UseVisualStyleBackColor = true;
+            // 
+            // radioVisualStudio
+            // 
+            this.radioVisualStudio.AutoSize = true;
+            this.radioVisualStudio.Location = new System.Drawing.Point(29, 40);
+            this.radioVisualStudio.Name = "radioVisualStudio";
+            this.radioVisualStudio.Size = new System.Drawing.Size(118, 25);
+            this.radioVisualStudio.TabIndex = 0;
+            this.radioVisualStudio.TabStop = true;
+            this.radioVisualStudio.Tag = "vs";
+            this.radioVisualStudio.Text = "Visual Studio";
+            this.radioVisualStudio.UseVisualStyleBackColor = true;
             // 
             // grpGit
             // 
@@ -183,15 +184,13 @@
             this.grpGit.TabStop = false;
             this.grpGit.Text = "Git";
             // 
-            // checkEnableGit
+            // numberGitCommits
             // 
-            this.checkEnableGit.AutoSize = true;
-            this.checkEnableGit.Location = new System.Drawing.Point(36, 164);
-            this.checkEnableGit.Name = "checkEnableGit";
-            this.checkEnableGit.Size = new System.Drawing.Size(129, 25);
-            this.checkEnableGit.TabIndex = 0;
-            this.checkEnableGit.Text = "Enable Git Log";
-            this.checkEnableGit.UseVisualStyleBackColor = true;
+            this.numberGitCommits.Location = new System.Drawing.Point(155, 40);
+            this.numberGitCommits.Margin = new System.Windows.Forms.Padding(4);
+            this.numberGitCommits.Name = "numberGitCommits";
+            this.numberGitCommits.Size = new System.Drawing.Size(49, 29);
+            this.numberGitCommits.TabIndex = 2;
             // 
             // label1
             // 
@@ -202,13 +201,15 @@
             this.label1.TabIndex = 1;
             this.label1.Text = "Commits to show:";
             // 
-            // numberGitCommits
+            // checkEnableGit
             // 
-            this.numberGitCommits.Location = new System.Drawing.Point(155, 40);
-            this.numberGitCommits.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.numberGitCommits.Name = "numberGitCommits";
-            this.numberGitCommits.Size = new System.Drawing.Size(49, 29);
-            this.numberGitCommits.TabIndex = 2;
+            this.checkEnableGit.AutoSize = true;
+            this.checkEnableGit.Location = new System.Drawing.Point(36, 164);
+            this.checkEnableGit.Name = "checkEnableGit";
+            this.checkEnableGit.Size = new System.Drawing.Size(129, 25);
+            this.checkEnableGit.TabIndex = 0;
+            this.checkEnableGit.Text = "Enable Git Log";
+            this.checkEnableGit.UseVisualStyleBackColor = true;
             // 
             // checkEnableTimekeeping
             // 
@@ -240,11 +241,22 @@
             this.btnSave.UseVisualStyleBackColor = true;
             this.btnSave.Click += new System.EventHandler(this.BtnSave_Click);
             // 
+            // btnSaveAnother
+            // 
+            this.btnSaveAnother.Location = new System.Drawing.Point(256, 461);
+            this.btnSaveAnother.Name = "btnSaveAnother";
+            this.btnSaveAnother.Size = new System.Drawing.Size(188, 32);
+            this.btnSaveAnother.TabIndex = 10;
+            this.btnSaveAnother.Text = "Save and Add Another";
+            this.btnSaveAnother.UseVisualStyleBackColor = true;
+            this.btnSaveAnother.Click += new System.EventHandler(this.BtnSaveAnother_Click);
+            // 
             // FormAddProject
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 21F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(676, 514);
+            this.Controls.Add(this.btnSaveAnother);
             this.Controls.Add(this.btnSave);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.checkEnableTimekeeping);
@@ -258,7 +270,7 @@
             this.Controls.Add(this.lblProjectName);
             this.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "FormAddProject";
             this.Text = "Add New Project";
             this.Load += new System.EventHandler(this.FormAddProject_Load);
@@ -293,5 +305,6 @@
         private System.Windows.Forms.CheckBox checkEnableTimekeeping;
         private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.Button btnSave;
+        private System.Windows.Forms.Button btnSaveAnother;
     }
 }

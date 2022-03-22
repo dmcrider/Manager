@@ -9,6 +9,8 @@ namespace Manager
     [Serializable]
     public class UserSettings
     {
+        public static string FileName = "global_settings.json";
+
         public DateTimePattern DatePattern { get; set; }
         public DateTimePattern TimePattern { get; set; }
         public string MasterRootPath { get; set; }
@@ -17,6 +19,8 @@ namespace Manager
         public string VSCommunityExecutableLocation { get; set; }
         public string AndroidStudioExecutableLocation { get; set; }
         public string UnityExecutableLocation { get; set; }
+        public string LastUsedProfile { get; set; }
+        public List<string> Profiles { get; set; }
 
         public UserSettings()
         {
@@ -28,9 +32,11 @@ namespace Manager
             VSCommunityExecutableLocation = "";
             AndroidStudioExecutableLocation = "";
             UnityExecutableLocation = "";
+            LastUsedProfile = "Default";
+            Profiles = new List<string>();
         }
 
-        public UserSettings(DateTimePattern datePattern, DateTimePattern timePattern, string masterRootPath, List<Project> excluded, string vsCode, string vsCommunity, string android, string unity)
+        public UserSettings(DateTimePattern datePattern, DateTimePattern timePattern, string masterRootPath, List<Project> excluded, string vsCode, string vsCommunity, string android, string unity, string profile, List<string> profNames)
         {
             DatePattern = datePattern;
             TimePattern = timePattern;
@@ -40,6 +46,8 @@ namespace Manager
             VSCommunityExecutableLocation = vsCommunity;
             AndroidStudioExecutableLocation = android;
             UnityExecutableLocation = unity;
+            LastUsedProfile = profile;
+            Profiles = profNames;
         }
 
         public string GetDateTimeFormat()

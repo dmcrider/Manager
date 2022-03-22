@@ -32,7 +32,13 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMain));
             this.menuStripMain = new System.Windows.Forms.MenuStrip();
             this.toolStripMenuItemFile = new System.Windows.Forms.ToolStripMenuItem();
+            this.profilesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItemProfilesAdd = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripMenuItemExit = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItemProjects = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItemAddProject = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItemRemoveProjects = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItemSettings = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItemConfigure = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItemLaunchers = new System.Windows.Forms.ToolStripMenuItem();
@@ -66,9 +72,8 @@
             this.lblTotal = new System.Windows.Forms.Label();
             this.grpOpenProject = new System.Windows.Forms.GroupBox();
             this.btnNotes = new System.Windows.Forms.Button();
-            this.toolStripMenuItemProjects = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItemAddProject = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItemRemoveProjects = new System.Windows.Forms.ToolStripMenuItem();
+            this.lblProfile = new System.Windows.Forms.Label();
+            this.lblProfileName = new System.Windows.Forms.Label();
             this.menuStripMain.SuspendLayout();
             this.grpProjectDetails.SuspendLayout();
             this.grpTime.SuspendLayout();
@@ -92,16 +97,58 @@
             // toolStripMenuItemFile
             // 
             this.toolStripMenuItemFile.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.profilesToolStripMenuItem,
             this.toolStripMenuItemExit});
             this.toolStripMenuItemFile.Name = "toolStripMenuItemFile";
             this.toolStripMenuItemFile.Size = new System.Drawing.Size(46, 25);
             this.toolStripMenuItemFile.Text = "File";
             // 
+            // profilesToolStripMenuItem
+            // 
+            this.profilesToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripMenuItemProfilesAdd,
+            this.toolStripSeparator});
+            this.profilesToolStripMenuItem.Name = "profilesToolStripMenuItem";
+            this.profilesToolStripMenuItem.Size = new System.Drawing.Size(132, 26);
+            this.profilesToolStripMenuItem.Text = "Profiles";
+            // 
+            // toolStripMenuItemProfilesAdd
+            // 
+            this.toolStripMenuItemProfilesAdd.Name = "toolStripMenuItemProfilesAdd";
+            this.toolStripMenuItemProfilesAdd.Size = new System.Drawing.Size(161, 26);
+            this.toolStripMenuItemProfilesAdd.Text = "Create New";
+            // 
+            // toolStripSeparator
+            // 
+            this.toolStripSeparator.Name = "toolStripSeparator";
+            this.toolStripSeparator.Size = new System.Drawing.Size(158, 6);
+            // 
             // toolStripMenuItemExit
             // 
             this.toolStripMenuItemExit.Name = "toolStripMenuItemExit";
-            this.toolStripMenuItemExit.Size = new System.Drawing.Size(104, 26);
+            this.toolStripMenuItemExit.Size = new System.Drawing.Size(132, 26);
             this.toolStripMenuItemExit.Text = "Exit";
+            // 
+            // toolStripMenuItemProjects
+            // 
+            this.toolStripMenuItemProjects.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripMenuItemAddProject,
+            this.toolStripMenuItemRemoveProjects});
+            this.toolStripMenuItemProjects.Name = "toolStripMenuItemProjects";
+            this.toolStripMenuItemProjects.Size = new System.Drawing.Size(77, 25);
+            this.toolStripMenuItemProjects.Text = "Projects";
+            // 
+            // toolStripMenuItemAddProject
+            // 
+            this.toolStripMenuItemAddProject.Name = "toolStripMenuItemAddProject";
+            this.toolStripMenuItemAddProject.Size = new System.Drawing.Size(196, 26);
+            this.toolStripMenuItemAddProject.Text = "Add Project";
+            // 
+            // toolStripMenuItemRemoveProjects
+            // 
+            this.toolStripMenuItemRemoveProjects.Name = "toolStripMenuItemRemoveProjects";
+            this.toolStripMenuItemRemoveProjects.Size = new System.Drawing.Size(196, 26);
+            this.toolStripMenuItemRemoveProjects.Text = "Remove Projects";
             // 
             // toolStripMenuItemSettings
             // 
@@ -115,13 +162,13 @@
             // toolStripMenuItemConfigure
             // 
             this.toolStripMenuItemConfigure.Name = "toolStripMenuItemConfigure";
-            this.toolStripMenuItemConfigure.Size = new System.Drawing.Size(180, 26);
+            this.toolStripMenuItemConfigure.Size = new System.Drawing.Size(151, 26);
             this.toolStripMenuItemConfigure.Text = "Configure";
             // 
             // toolStripMenuItemLaunchers
             // 
             this.toolStripMenuItemLaunchers.Name = "toolStripMenuItemLaunchers";
-            this.toolStripMenuItemLaunchers.Size = new System.Drawing.Size(180, 26);
+            this.toolStripMenuItemLaunchers.Size = new System.Drawing.Size(151, 26);
             this.toolStripMenuItemLaunchers.Text = "Launchers";
             // 
             // toolStripMenuItemAbout
@@ -157,9 +204,9 @@
             // 
             // lblProjectLocation
             // 
-            this.lblProjectLocation.Location = new System.Drawing.Point(264, 692);
+            this.lblProjectLocation.Location = new System.Drawing.Point(747, 692);
             this.lblProjectLocation.Name = "lblProjectLocation";
-            this.lblProjectLocation.Size = new System.Drawing.Size(888, 23);
+            this.lblProjectLocation.Size = new System.Drawing.Size(405, 23);
             this.lblProjectLocation.TabIndex = 2;
             this.lblProjectLocation.Text = "C:\\Program Files\\Some Project\\";
             // 
@@ -428,32 +475,29 @@
             this.btnNotes.UseVisualStyleBackColor = true;
             this.btnNotes.Click += new System.EventHandler(this.BtnNotes_Click);
             // 
-            // toolStripMenuItemProjects
+            // lblProfile
             // 
-            this.toolStripMenuItemProjects.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripMenuItemAddProject,
-            this.toolStripMenuItemRemoveProjects});
-            this.toolStripMenuItemProjects.Name = "toolStripMenuItemProjects";
-            this.toolStripMenuItemProjects.Size = new System.Drawing.Size(77, 25);
-            this.toolStripMenuItemProjects.Text = "Projects";
+            this.lblProfile.Location = new System.Drawing.Point(270, 690);
+            this.lblProfile.Name = "lblProfile";
+            this.lblProfile.Size = new System.Drawing.Size(124, 23);
+            this.lblProfile.TabIndex = 11;
+            this.lblProfile.Text = "Current Profile: ";
             // 
-            // toolStripMenuItemAddProject
+            // lblProfileName
             // 
-            this.toolStripMenuItemAddProject.Name = "toolStripMenuItemAddProject";
-            this.toolStripMenuItemAddProject.Size = new System.Drawing.Size(196, 26);
-            this.toolStripMenuItemAddProject.Text = "Add Project";
-            // 
-            // toolStripMenuItemRemoveProjects
-            // 
-            this.toolStripMenuItemRemoveProjects.Name = "toolStripMenuItemRemoveProjects";
-            this.toolStripMenuItemRemoveProjects.Size = new System.Drawing.Size(196, 26);
-            this.toolStripMenuItemRemoveProjects.Text = "Remove Projects";
+            this.lblProfileName.Location = new System.Drawing.Point(386, 690);
+            this.lblProfileName.Name = "lblProfileName";
+            this.lblProfileName.Size = new System.Drawing.Size(205, 23);
+            this.lblProfileName.TabIndex = 12;
+            this.lblProfileName.Text = "Profile1";
             // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 21F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1164, 722);
+            this.Controls.Add(this.lblProfileName);
+            this.Controls.Add(this.lblProfile);
             this.Controls.Add(this.btnNotes);
             this.Controls.Add(this.grpOpenProject);
             this.Controls.Add(this.grpTime);
@@ -525,6 +569,11 @@
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemProjects;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemAddProject;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemRemoveProjects;
+        private System.Windows.Forms.ToolStripMenuItem profilesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemProfilesAdd;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator;
+        private System.Windows.Forms.Label lblProfile;
+        private System.Windows.Forms.Label lblProfileName;
     }
 }
 

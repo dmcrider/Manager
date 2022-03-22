@@ -54,17 +54,10 @@ namespace Manager
 
         private void BtnSave_Click(object sender, EventArgs e)
         {
-            _project.Name = txtProjectName.Text;
-            _project.RootDirectory = txtDirectoryPath.Text;
-            _project.DefaultLauncher = GetLauncher();
-            _project.EnableGitLog = checkEnableGit.Checked;
-            _project.EnableTimekeeping = checkEnableTimekeeping.Checked;
-            _project.GitLogHistory = (int)numberGitCommits.Value;
-
-            if (ValidateRequiredFields(_project))
-            {
-                _formMain.AddProject(_project);
-            }
+            btnSave.Enabled = false;
+            SaveProject();
+            DialogResult = DialogResult.OK;
+            Close();
         }
 
         private bool ValidateRequiredFields(Project proj)
@@ -104,6 +97,28 @@ namespace Manager
             }
 
             return Launcher.None;
+        }
+
+        private void BtnSaveAnother_Click(object sender, EventArgs e)
+        {
+            btnSaveAnother.Enabled = false;
+            SaveProject();
+            btnSaveAnother.Enabled = true;
+        }
+
+        private void SaveProject()
+        {
+            _project.Name = txtProjectName.Text;
+            _project.RootDirectory = txtDirectoryPath.Text;
+            _project.DefaultLauncher = GetLauncher();
+            _project.EnableGitLog = checkEnableGit.Checked;
+            _project.EnableTimekeeping = checkEnableTimekeeping.Checked;
+            _project.GitLogHistory = (int)numberGitCommits.Value;
+
+            if (ValidateRequiredFields(_project))
+            {
+                _formMain.AddProject(_project);
+            }
         }
     }
 }
