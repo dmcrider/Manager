@@ -293,8 +293,17 @@ namespace Manager
         {
             if(selectedProject.RootDirectory == txtProjectLocation.Text)
             {
-                selectedProject.EnableTimekeeping = chkEnableTimekeeping.Checked;
+                var isChecked = chkEnableTimekeeping.Checked;
+
+                selectedProject.EnableTimekeeping = isChecked;
+                selectedProject.TimeKeepingProvider = isChecked ? "Default" : "None";
+                btnEnableClockify.Visible = isChecked;
             }
+        }
+
+        private void BtnEnableClockify_Click(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
         }
     }
 

@@ -62,6 +62,7 @@ namespace Manager
             this.txtMainProjFile = new System.Windows.Forms.TextBox();
             this.lblMainProjFile = new System.Windows.Forms.Label();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
+            this.btnEnableClockify = new System.Windows.Forms.Button();
             this.grpGeneral.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.txtGitLogHistory)).BeginInit();
             this.grpProjectSettings.SuspendLayout();
@@ -260,6 +261,7 @@ namespace Manager
             // 
             // grpProjectSettings
             // 
+            this.grpProjectSettings.Controls.Add(this.btnEnableClockify);
             this.grpProjectSettings.Controls.Add(this.lblOpenWith);
             this.grpProjectSettings.Controls.Add(this.listOpenWith);
             this.grpProjectSettings.Controls.Add(this.chkEnableTimekeeping);
@@ -276,7 +278,7 @@ namespace Manager
             // lblOpenWith
             // 
             this.lblOpenWith.AutoSize = true;
-            this.lblOpenWith.Location = new System.Drawing.Point(16, 152);
+            this.lblOpenWith.Location = new System.Drawing.Point(16, 202);
             this.lblOpenWith.Name = "lblOpenWith";
             this.lblOpenWith.Size = new System.Drawing.Size(88, 21);
             this.lblOpenWith.TabIndex = 10;
@@ -285,7 +287,7 @@ namespace Manager
             // listOpenWith
             // 
             this.listOpenWith.FormattingEnabled = true;
-            this.listOpenWith.Location = new System.Drawing.Point(119, 149);
+            this.listOpenWith.Location = new System.Drawing.Point(119, 199);
             this.listOpenWith.Name = "listOpenWith";
             this.listOpenWith.Size = new System.Drawing.Size(210, 29);
             this.listOpenWith.TabIndex = 9;
@@ -342,6 +344,17 @@ namespace Manager
             // openFileDialog
             // 
             this.openFileDialog.FileName = "openFileDialog1";
+            // 
+            // btnEnableClockify
+            // 
+            this.btnEnableClockify.Enabled = false;
+            this.btnEnableClockify.Location = new System.Drawing.Point(44, 119);
+            this.btnEnableClockify.Name = "btnEnableClockify";
+            this.btnEnableClockify.Size = new System.Drawing.Size(236, 35);
+            this.btnEnableClockify.TabIndex = 15;
+            this.btnEnableClockify.Text = "Enable Clockify.me Integration";
+            this.btnEnableClockify.UseVisualStyleBackColor = true;
+            this.btnEnableClockify.Click += new System.EventHandler(this.BtnEnableClockify_Click);
             // 
             // FormSettings
             // 
@@ -411,5 +424,6 @@ namespace Manager
         private System.Windows.Forms.OpenFileDialog openFileDialog;
         private System.Windows.Forms.Label lblOpenWith;
         private System.Windows.Forms.ComboBox listOpenWith;
+        private System.Windows.Forms.Button btnEnableClockify;
     }
 }

@@ -58,4 +58,5 @@
       <PackagePath>\</PackagePath>
     </None>
   </ItemGroup>
+  <ProjectExtensions><VisualStudio><UserProperties env_1config__JsonSchema="https://json-schema.org/draft/2020-12/schema" /></VisualStudio></ProjectExtensions>
 </Project>

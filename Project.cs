@@ -19,13 +19,14 @@ namespace Manager
         public Launcher DefaultLauncher { get; set; }
         public bool EnableGitLog { get; set; }
         public bool EnableTimekeeping { get; set; }
+        public string TimeKeepingProvider { get; set; }
         public int GitLogHistory { get; set; }
 
         private string baseNotesPath = Path.Combine(FormMain.baseFilePath, "Notes");
 
         public Project() { }
 
-        public Project(string name, string rootDirectory, string mainFile, string gitCurrentBranch, Launcher defaultLauncher, bool useGit, bool time, int logHistory)
+        public Project(string name, string rootDirectory, string mainFile, string gitCurrentBranch, Launcher defaultLauncher, bool useGit, bool time, int logHistory, string tkProv)
         {
             Name = name;
             RootDirectory = rootDirectory;
@@ -35,6 +36,7 @@ namespace Manager
             EnableGitLog = useGit;
             EnableTimekeeping = time;
             GitLogHistory = logHistory;
+            TimeKeepingProvider = tkProv;
         }
 
         public void CreateDirectoriesIfNeeded()
