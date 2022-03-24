@@ -44,10 +44,10 @@ namespace Manager
             CenterToParent();
         }
 
-        public FormNotes(string path, string dir) : this()
+        public FormNotes(string file) : this()
         {
-            _notesPath = path;
-            _notesDir = dir;
+            _notesPath = file;
+            _notesDir = Path.GetDirectoryName(_notesPath);
         }
 
         private void FormNotes_Load(object sender, EventArgs e)

@@ -733,8 +733,8 @@ namespace Manager
         #region Notes
         private void BtnNotes_Click(object sender, EventArgs e)
         {
-            string[] notes = ((Button)sender).Tag as string[];
-            FormNotes formNotes = new FormNotes(notes[0], notes[1]);
+            var notes = ((Button)sender).Tag as string;
+            var formNotes = new FormNotes(notes);
             formNotes.ShowDialog();
         }
         #endregion
