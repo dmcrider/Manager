@@ -12,8 +12,7 @@ namespace Manager
 {
     public partial class FormAddProject : Form
     {
-        private Project _project;
-        private FormMain _formMain;
+        internal Project Project { get; set; }
 
         public FormAddProject()
         {
@@ -21,104 +20,30 @@ namespace Manager
             CenterToParent();
         }
 
-        public FormAddProject(FormMain main) : this()
-        {
-            _formMain = main;
-        }
-
         private void FormAddProject_Load(object sender, EventArgs e)
         {
-            _project = new Project();
+            Project = null;
         }
 
         private void BtnBrowse_Click(object sender, EventArgs e)
         {
             var result = folderBrowserDialog.ShowDialog();
-
             if(result == DialogResult.OK)
             {
-                txtDirectoryPath.Text = folderBrowserDialog.SelectedPath;
-                
+                txtRootDirectory.Text = folderBrowserDialog.SelectedPath;
                 if(txtProjectName.Text == string.Empty)
                 {
-                    txtProjectName.Text = System.IO.Path.GetFileName(System.IO.Path.GetDirectoryName(folderBrowserDialog.SelectedPath));
+                    txtProjectName.Text = folderBrowserDialog.SelectedPath.Split("\\").Last();
                 }
             }
         }
 
-        private void BtnCancel_Click(object sender, EventArgs e)
+        private void BtnCreate_Click(object sender, EventArgs e)
         {
-            _project = null;
-            Close();
-        }
+            Project = Project.CreateProject(txtProjectName.Text, txtRootDirectory.Text, (int)numberGitCommits.Value);
 
-        private void BtnSave_Click(object sender, EventArgs e)
-        {
-            btnSave.Enabled = false;
-            SaveProject();
             DialogResult = DialogResult.OK;
             Close();
-        }
-
-        private bool ValidateRequiredFields(Project proj)
-        {
-            if(proj.RootDirectory == string.Empty)
-            {
-                MessageBox.Show("Please select a base Directory for this project.");
-                return false;
-            }
-
-            if(proj.Name == string.Empty)
-            {
-                MessageBox.Show("Please enter a name for the project.");
-                return false;
-            }
-
-            // All conditions have been met
-            return true;
-        }
-
-        private Launcher GetLauncher()
-        {
-            foreach(var radio in grpDefaultLauncher.Controls.OfType<RadioButton>())
-            {
-                if (radio.Checked)
-                {
-                    switch (radio.Tag.ToString())
-                    {
-                        case "vs": return Launcher.VisualStudioCommunity;
-                        case "vsc": return Launcher.VisualStudioCode;
-                        case "android": return Launcher.AndroidStudio;
-                        case "file":
-                        default:
-                            return Launcher.None;
-                    }
-                }
-            }
-
-            return Launcher.None;
-        }
-
-        private void BtnSaveAnother_Click(object sender, EventArgs e)
-        {
-            btnSaveAnother.Enabled = false;
-            SaveProject();
-            btnSaveAnother.Enabled = true;
-        }
-
-        private void SaveProject()
-        {
-            _project.Name = txtProjectName.Text;
-            _project.RootDirectory = txtDirectoryPath.Text;
-            _project.DefaultLauncher = GetLauncher();
-            _project.EnableGitLog = checkEnableGit.Checked;
-            _project.EnableTimekeeping = checkEnableTimekeeping.Checked;
-            _project.GitLogHistory = (int)numberGitCommits.Value;
-
-            if (ValidateRequiredFields(_project))
-            {
-                _formMain.AddProject(_project);
-            }
         }
     }
 }
